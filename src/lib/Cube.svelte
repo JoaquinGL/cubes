@@ -13,7 +13,6 @@
   let element: HTMLElement;
   let body: Matter.Body;
 
-  // Posición inicial: usa las props si existen, si no, aleatoria.
   const initialX = x !== undefined ? x : Math.random() * 400 + 50;
   const initialY = y !== undefined ? y : Math.random() * 100;
 
@@ -26,7 +25,6 @@
       label: 'Cube Body'
     });
 
-    // Adjuntamos datos importantes directamente al cuerpo de Matter
     (body as any).element = element;
     (body as any).cubeId = id;
     (body as any).cubeValue = number;
@@ -34,7 +32,7 @@
     World.add(world, body);
 
     function update() {
-      if (body && element) {
+      if (body && element && !body.isStatic) { // <-- ¡LA CORRECCIÓN CLAVE!
         element.style.transform = `translate(${body.position.x - 35}px, ${body.position.y - 35}px) rotate(${body.angle}rad)`;
       }
       requestAnimationFrame(update);

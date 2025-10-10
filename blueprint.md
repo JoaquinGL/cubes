@@ -14,50 +14,56 @@ El proyecto está construido con **Svelte** y **TypeScript**, aprovechando la re
 ### 1. Estructura de Componentes
 
 - **`App.svelte`**: Componente raíz.
-- **`Game.svelte`**: Orquesta el estado del juego, la UI principal (como el objetivo) y la comunicación entre componentes.
-- **`Board.svelte`**: Gestiona el motor `Matter.js`, las interacciones físicas y la lógica de las cestas.
-- **`Cube.svelte`**: Representa un cubo numerado y arrastrable, con animaciones y posicionamiento configurable.
-- **`Basket.svelte`**: Representa una cesta para operaciones aritméticas, con estados visuales.
+- **`Game.svelte`**: Orquesta el estado del juego y la UI.
+- **`Board.svelte`**: Gestiona el motor `Matter.js` y toda la lógica de interacción.
+- **`Cube.svelte`**: Representa un cubo numerado y arrastrable.
+- **`Basket.svelte`**: Representa una cesta de operaciones.
+- **`Victory.svelte`**: Modal de victoria que aparece al completar el objetivo.
 
 ### 2. Lógica y Estado (Stores)
 
-- **`numbers`**: Almacena los cubos activos, incluyendo sus posiciones de aparición opcionales.
+- **`numbers`**: Almacena los cubos activos.
 - **`target`**: Almacena el número objetivo de la ronda.
-- **`addNumber`, `removeNumber`**: Acciones para manipular la lista de cubos de forma reactiva.
+- **`generateNewRound`**: Función para generar un nuevo puzle.
 
 ### 3. Mecánica de Juego y Físicas
 
 - **Motor de Físicas**: Basado en `Matter.js` para una simulación realista.
-- **Interacción de Arrastre**: Los jugadores pueden arrastrar y soltar cubos. Se gestiona el `z-index` para que el cubo arrastrado siempre esté al frente.
-- **Límites Físicos**: El tablero tiene paredes invisibles para contener los cubos.
+- **Interacción de Arrastre**: Los jugadores pueden arrastrar y soltar cubos.
 
-- **Cestas de Operaciones Aritméticas (Implementado y Corregido)**:
-    - **Lógica de Operaciones**: El juego soporta Suma, Resta, Multiplicación y División.
-        - **Suma**: `A + B`
-        - **Resta**: `max(A, B) - min(A, B)`
-        - **Multiplicación**: `A * B`
-        - **División**: `A / B` (solo si la división es exacta).
-    - **Activación por `enddrag`**: La lógica se ejecuta de forma segura solo cuando el usuario suelta un cubo, evitando bucles indeseados.
-    - **Feedback Visual**: Las cestas cambian de apariencia cuando contienen cubos.
-    - **Posicionamiento del Resultado**: El nuevo cubo aparece en el centro de la cesta correspondiente.
-    - **Animación de Aparición**: El cubo resultante aparece con una animación de escalado.
+- **Mecánica de Cestas "Pegajosas" (Sticky Baskets)**:
+    - **Posicionamiento y Aparición**: Las cestas aparecen en el centro del tablero con una animación después de que los cubos iniciales se asienten.
+    - **Captura de Cubos (Sticking)**: Al soltar un cubo en una cesta vacía, este se queda "pegado".
+    - **Liberación de Cubos (Unsticking)**: Al volver a arrastrar un cubo pegado, este se libera.
+    - **Lógica de Operación**: La operación aritmética se ejecuta cuando se suelta un segundo cubo en una cesta que ya contiene uno.
+    - **Creación de Resultado**: Tras una operación, los dos cubos se eliminan y se crea un nuevo cubo con el resultado.
 
-### 4. Flujo de Interacción Actual
+- **Condición de Victoria y Bucle de Juego (¡Implementado!)**:
+    - **Detección de Victoria**: El juego detecta si un cubo resultante de una operación coincide con el número objetivo.
+    - **Pantalla de Victoria**: Al ganar, se muestra un modal de celebración con animaciones.
+    - **Jugar de Nuevo**: El jugador puede iniciar una nueva ronda directamente desde la pantalla de victoria, creando un bucle de juego completo.
 
-1.  El usuario ve un número objetivo y varios cubos numerados.
-2.  Arrastra dos cubos a una de las cuatro cestas de operaciones (`+`, `-`, `*`, `÷`).
-3.  Al soltarlos, los dos cubos desaparecen y se crea un nuevo cubo con el resultado de la operación en la misma cesta.
-4.  El objetivo es combinar cubos hasta que uno de ellos sea igual al número objetivo.
+### 4. Flujo de Juego Completo
+
+1.  El usuario ve un número objetivo y varios cubos que caen en el tablero.
+2.  Las cestas de operaciones aparecen en el centro.
+3.  El usuario arrastra un cubo a una cesta, donde se queda pegado.
+4.  El usuario arrastra un segundo cubo a la misma cesta, ejecutando la operación.
+5.  Se genera un nuevo cubo con el resultado.
+6.  El jugador repite el proceso hasta que el valor de un cubo resultante es igual al objetivo.
+7.  **¡Victoria!** Se muestra la pantalla de victoria, desde donde se puede reiniciar la partida.
 
 ---
 
-## Plan de Implementación Próximo
+## Estado del Proyecto: ¡Completado!
 
-**Objetivo:** Implementar la condición de victoria y proporcionar una forma de jugar de nuevo.
+**¡FUNCIONALIDAD PRINCIPAL COMPLETADA!**
 
-**Pasos Concretos:**
+El bucle de juego está finalizado. El jugador puede empezar una partida, jugar hasta ganar y reiniciar. Hemos implementado con éxito una mecánica de juego interactiva y única.
 
-1.  **Detectar la Victoria**: En `Board.svelte`, después de cada operación, comprobar si el nuevo `result` es igual al `$target` del store.
-2.  **Crear un Componente de Victoria**: Diseñar un componente `Victory.svelte` que se muestre como un overlay o modal cuando se gana.
-3.  **Gestionar el Estado de Victoria**: Añadir una variable de estado (p. ej., `gameWon`) en `Game.svelte` para controlar la visibilidad del componente de victoria.
-4.  **Botón "Jugar de Nuevo"**: Incluir un botón en el componente de victoria que llame a la función `generateNewRound` para reiniciar el juego.
+### Ideas para Futuras Mejoras (Opcional)
+
+-   **Efectos de Sonido**: Añadir sonidos para la colisión de cubos, operaciones y victoria para una experiencia más inmersiva.
+-   **Animaciones Adicionales**: Pulir las animaciones, como la desaparición de los cubos.
+-   **Niveles de Dificultad**: Introducir diferentes niveles que ajusten la complejidad de los números.
+-   **Puntuación o Temporizador**: Añadir un sistema de puntuación para un mayor desafío competitivo.

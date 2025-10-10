@@ -5,9 +5,11 @@
   import Board from './Board.svelte';
   import Cube from './Cube.svelte';
   import Basket from './Basket.svelte';
+  import { fade } from 'svelte/transition';
   import type Matter from 'matter-js';
 
   let gameReady = false;
+  let showBaskets = false;
   let world: Matter.World | null = null;
   let boardWidth = 0;
   let boardHeight = 0;
@@ -17,6 +19,11 @@
   onMount(() => {
     generateNewRound();
     gameReady = true;
+
+    // Retrasamos la aparición de las cestas
+    setTimeout(() => {
+      showBaskets = true;
+    }, 1500);
   });
 
   function handleBoardReady(event: CustomEvent<{ world: Matter.World; width: number; height: number }>) {
@@ -47,10 +54,20 @@
         {/each}
 
         <!-- Cestas de Operaciones -->
-        <Basket id={1} operation="add" x={boardWidth * 1 / 5} y={boardHeight - 100} cubesInside={basketStates.get(1)?.count ?? 0} />
-        <Basket id={2} operation="subtract" x={boardWidth * 2 / 5} y={boardHeight - 100} cubesInside={basketStates.get(2)?.count ?? 0} />
-        <Basket id={3} operation="multiply" x={boardWidth * 3 / 5} y={boardHeight - 100} cubesInside={basketStates.get(3)?.count ?? 0} />
-        <Basket id={4} operation="divide" x={boardWidth * 4 / 5} y={boardHeight - 100} cubesInside={basketStates.get(4)?.count ?? 0} />
+        {#if showBaskets}
+            <div in:fade={{ duration: 500 }}>
+                <Basket id={1} operation="add" x={boardWidth * 1 / 5} y={boardHeight / 2} cubesInside={basketStates.get(1)?.count ?? 0} />
+            </div>
+            <div in:fade={{ duration: 500, delay: 200 }}>
+                <Basket id={2} operation="subtract" x={boardWidth * 2 / 5} y={boardHeight / 2} cubesInside={basketStates.get(2)?.count ?? 0} />
+            </div>
+            <div in:fade={{ duration: 500, delay: 400 }}>
+                <Basket id={3} operation="multiply" x={boardWidth * 3 / 5} y={boardHeight / 2} cubesInside={basketStates.get(3)?.count ?? 0} />
+            </div>
+            <div in:fade={{ duration: 500, delay: 600 }}>
+                <Basket id={4} operation="divide" x={boardWidth * 4 / 5} y={boardHeight / 2} cubesInside={basketStates.get(4)?.count ?? 0} />
+            </div>
+        {/if}
 
       {/if}
     </Board>
