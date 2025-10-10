@@ -1,102 +1,133 @@
 
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { onMount, createEventDispatcher, tick } from 'svelte';
   import Matter from 'matter-js';
   import { setupEngine, addBoundaries } from './engine';
+  import { addNumber, removeNumber } from './stores';
 
   const dispatch = createEventDispatcher();
 
   let container: HTMLElement;
   let world: Matter.World;
   let engine: Matter.Engine;
+  let baskets: Matter.Body[] = [];
+  let boardWidth: number;
+  let boardHeight: number;
 
   onMount(() => {
     const { engine: eng, world: wrld, mouseConstraint } = setupEngine(container);
     engine = eng;
     world = wrld;
-    const boardWidth = container.clientWidth;
-    const boardHeight = 600;
+    boardWidth = container.clientWidth;
+    boardHeight = 600;
     addBoundaries(world, boardWidth, boardHeight);
 
     let draggedBody: Matter.Body | null = null;
-    let originalInertia: number | undefined;
-
-    function setAllCubesPointerEvents(value: 'none' | 'auto') {
-        world.bodies.forEach(body => {
-            if (body.label === 'Rectangle Body') {
-                const el = (body as any).element as HTMLElement;
-                if (el) {
-                    el.style.pointerEvents = value;
-                }
-            }
-        });
-    }
 
     Matter.Events.on(mouseConstraint, 'startdrag', (event) => {
         draggedBody = event.body;
-        setAllCubesPointerEvents('none');
-        originalInertia = draggedBody.inertia;
-        Matter.Body.setInertia(draggedBody, Infinity);
-        Matter.Body.setAngle(draggedBody, 0);
-        const element = (draggedBody as any).element as HTMLElement;
-        if(element) {
-            element.style.pointerEvents = 'auto';
-            element.style.zIndex = '100';
+        if (draggedBody && (draggedBody as any).element) {
+            (draggedBody as any).element.style.zIndex = '100'; // Poner al frente al arrastrar
         }
     });
 
     Matter.Events.on(mouseConstraint, 'enddrag', (event) => {
-        setAllCubesPointerEvents('auto');
-        if(draggedBody) {
-            if (originalInertia !== undefined) {
-                Matter.Body.setInertia(draggedBody, originalInertia);
-                originalInertia = undefined;
-            }
-            const element = (draggedBody as any).element as HTMLElement;
-            if(element) {
-                element.style.zIndex = '1';
-            }
-            draggedBody = null;
+        if (draggedBody && (draggedBody as any).element) {
+            (draggedBody as any).element.style.zIndex = '1'; // Restaurar z-index
         }
+        draggedBody = null;
+        
+        // ¡AQUÍ ESTÁ LA CORRECCIÓN! La comprobación solo se hace al soltar el cubo.
+        checkAllBaskets(); 
     });
 
-    // --- ¡NUEVA LÓGICA DE CONTENCIÓN! ---
     Matter.Events.on(engine, 'beforeUpdate', () => {
-        if (draggedBody) {
-            const halfWidth = (draggedBody as any).element.clientWidth / 2;
-            const halfHeight = (draggedBody as any).element.clientHeight / 2;
-
-            const newPosition = { ...draggedBody.position };
-
-            // Comprobar y corregir límite izquierdo
-            if (newPosition.x < halfWidth) newPosition.x = halfWidth;
-            // Comprobar y corregir límite derecho
-            if (newPosition.x > boardWidth - halfWidth) newPosition.x = boardWidth - halfWidth;
-            // Comprobar y corregir límite superior
-            if (newPosition.y < halfHeight) newPosition.y = halfHeight;
-            // Comprobar y corregir límite inferior
-            if (newPosition.y > boardHeight - halfHeight) newPosition.y = boardHeight - halfHeight;
-            
-            Matter.Body.setPosition(draggedBody, newPosition);
+      // Lógica de contención del arrastre para que el cubo no se salga de los bordes
+      if (draggedBody) {
+        const limit = 5; // Límite pequeño para evitar que se "pegue" al borde
+        if (draggedBody.position.x < limit) {
+          Matter.Body.setPosition(draggedBody, { x: limit, y: draggedBody.position.y });
         }
+        if (draggedBody.position.x > boardWidth - limit) {
+          Matter.Body.setPosition(draggedBody, { x: boardWidth - limit, y: draggedBody.position.y });
+        }
+        if (draggedBody.position.y < limit) {
+          Matter.Body.setPosition(draggedBody, { x: draggedBody.position.x, y: limit });
+        }
+      }
     });
-
-    dispatch('boardready', { world });
+    
+    dispatch('boardready', { world, width: boardWidth, height: boardHeight });
   });
+
+  function handleBasketCreated(event: CustomEvent<{ body: Matter.Body }>) {
+      baskets.push(event.detail.body);
+      Matter.World.add(world, event.detail.body);
+  }
+
+  async function checkAllBaskets() {
+    if (!baskets.length || !world) return;
+
+    // Esperamos un ciclo para que la simulación de físicas se asiente tras soltar
+    await tick(); 
+
+    for (const basket of baskets) {
+      const cubesInBasket = world.bodies.filter(body => 
+        body.label === 'Cube Body' && Matter.Bounds.contains(basket.bounds, body.position)
+      );
+
+      dispatch('basketupdate', { basketId: basket.id, count: cubesInBasket.length });
+
+      if (cubesInBasket.length === 2) {
+        const [cubeA, cubeB] = cubesInBasket;
+        const valA = (cubeA as any).cubeValue as number;
+        const valB = (cubeB as any).cubeValue as number;
+        let result: number | null = null;
+
+        switch ((basket as any).operation) {
+          case 'add':
+            result = valA + valB;
+            break;
+          case 'subtract':
+            result = Math.max(valA, valB) - Math.min(valA, valB);
+            break;
+          case 'multiply':
+            result = valA * valB;
+            break;
+          case 'divide':
+            const higher = Math.max(valA, valB);
+            const lower = Math.min(valA, valB);
+            if (lower !== 0 && higher % lower === 0) {
+              result = higher / lower;
+            }
+            break;
+        }
+
+        if (result !== null) {
+          removeNumber((cubeA as any).cubeId);
+          removeNumber((cubeB as any).cubeId);
+          addNumber(result, basket.position.x, basket.position.y);
+        }
+      }
+    }
+  }
 
 </script>
 
-<div class="board-container" bind:this={container}>
+<div class="board-container" bind:this={container} on:basketcreated={handleBasketCreated}>
   <slot></slot>
 </div>
 
 <style>
   .board-container {
-    width: 100%;
+    width: 90vw;
+    max-width: 800px;
     height: 600px;
+    background-color: #fdf6e3;
+    border: 8px solid #a0522d;
+    border-radius: 20px;
     position: relative;
-    border: 5px solid #a0522d;
-    border-radius: 10px;
     overflow: hidden;
+    touch-action: none; /* Para mejorar la experiencia en móviles */
   }
 </style>

@@ -1,55 +1,72 @@
 
 <script lang="ts">
-    import { onMount } from "svelte";
-    import Matter from "matter-js";
+  import { onMount, createEventDispatcher } from 'svelte';
+  import Matter from 'matter-js';
 
-    export let world: Matter.World;
-    export let x: number;
-    export let y: number;
-    export let label: string; // El símbolo de la operación: +, -, ×, ÷
-    export let operation: string; // El nombre de la operación para la lógica: 'add', 'subtract', etc.
+  export let id: number;
+  export let x: number;
+  export let y: number;
+  export let width: number = 180;
+  export let height: number = 120;
+  export let operation: 'add' | 'subtract' | 'multiply' | 'divide' = 'add';
+  export let cubesInside: number = 0;
 
-    let element: HTMLElement;
+  const dispatch = createEventDispatcher();
 
-    onMount(() => {
-        const { Bodies, World } = Matter;
-
-        // Creamos un cuerpo estático y sensor.
-        // "Sensor" significa que detectará colisiones pero no interactuará físicamente.
-        const body = Bodies.rectangle(x, y, 90, 90, {
-            isStatic: true,
-            isSensor: true, // ¡Importante!
-            label: `basket-${operation}`, // Etiqueta para identificar la cesta en las colisiones
-        });
-
-        World.add(world, body);
+  onMount(() => {
+    const { Bodies } = Matter;
+    const basketBody = Bodies.rectangle(x, y, width, height, {
+      isStatic: true,
+      isSensor: true,
+      label: 'Basket Body',
+      render: { visible: false }
     });
+
+    (basketBody as any).operation = operation;
+    basketBody.id = id; // Asignamos el ID al cuerpo
+
+    dispatch('basketcreated', { body: basketBody });
+  });
+
+  const operationSymbols = {
+      add: '+',
+      subtract: '−',
+      multiply: '×',
+      divide: '÷'
+  }
 
 </script>
 
-<div class="basket" style="left: {x-45}px; top: {y-45}px;" bind:this={element}>
-    <span>{label}</span>
+<div class="basket-container" class:active={cubesInside > 0} style="left: {x - width / 2}px; top: {y - height / 2}px; width: {width}px; height: {height}px;">
+  <div class="basket-label">{operationSymbols[operation]}</div>
 </div>
 
 <style>
-    .basket {
-        position: absolute;
-        width: 90px;
-        height: 90px;
-        background-color: #d2b48c; /* Tono madera clara */
-        border: 3px dashed #a0522d; /* Borde discontinuo para indicar que es una zona de drop */
-        border-radius: 15px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-    }
+  .basket-container {
+    position: absolute;
+    background-color: rgba(160, 82, 45, 0.05);
+    border: 3px dashed #a0522d;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
 
-    span {
-        font-family: 'Patrick Hand', cursive;
-        font-size: 3rem;
-        font-weight: bold;
-        color: #fff;
-        text-shadow: 2px 2px 3px rgba(81, 48, 32, 0.5);
-    }
+  .basket-container.active {
+    background-color: rgba(139, 69, 19, 0.2);
+    border-color: #8b4513;
+  }
+
+  .basket-label {
+    font-size: 4em;
+    font-weight: bold;
+    color: #a0522d;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  .basket-container.active .basket-label {
+      opacity: 0.8;
+  }
 </style>
