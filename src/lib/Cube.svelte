@@ -1,7 +1,6 @@
 
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { scale } from 'svelte/transition';
   import Matter from 'matter-js';
 
   export let id: number;
@@ -13,7 +12,6 @@
   let element: HTMLElement;
   let body: Matter.Body;
 
-  // La posición inicial viene de las props, que ahora serán las de la cesta.
   const initialX = x !== undefined ? x : Math.random() * 400 + 50;
   const initialY = y !== undefined ? y : 50;
 
@@ -33,6 +31,7 @@
     let renderLoop: number;
     function update() {
       if (body && element) {
+        // Esta línea es la única fuente de verdad para la posición del cubo.
         element.style.transform = `translate(${body.position.x - 35}px, ${body.position.y - 35}px) rotate(${body.angle}rad)`;
       }
       renderLoop = requestAnimationFrame(update);
@@ -54,7 +53,6 @@
 <div 
   class="cube"
   bind:this={element}
-  in:scale={{ duration: 300, start: 0.5 }}
 >
   <span>{number}</span>
 </div>
