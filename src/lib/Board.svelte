@@ -15,7 +15,9 @@
 
   const basketStates: { [key: string]: { [bodyId: number]: { body: Matter.Body; timer: number | null; marked: boolean } } } = {
     suma: {},
-    resta: {}
+    resta: {},
+    multiplicacion: {},
+    division: {}
   };
 
   let zones: { label: string; x: number; y: number; width: number; height: number; bounds: Matter.Bounds }[] = [];
@@ -38,7 +40,9 @@
 
     const basketPositions = {
       suma: { x: sideMargin, y: 200 },
-      resta: { x: sideMargin, y: 400 }
+      resta: { x: sideMargin, y: 400 },
+      multiplicacion: { x: boardWidth - sideMargin, y: 200 },
+      division: { x: boardWidth - sideMargin, y: 400 }
     };
     
     zones.forEach(zone => {
@@ -66,7 +70,9 @@
 
     const basketPositions = {
       suma: { x: sideMargin, y: 200 },
-      resta: { x: sideMargin, y: 400 }
+      resta: { x: sideMargin, y: 400 },
+      multiplicacion: { x: boardWidth - sideMargin, y: 200 },
+      division: { x: boardWidth - sideMargin, y: 400 }
     };
     
     zones = Object.keys(basketPositions).map(label => {

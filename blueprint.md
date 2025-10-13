@@ -28,12 +28,14 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 
 #### ⚙️ Reglas de Cálculo
 - **Uso Único**: Cada cubo solo puede usarse una vez.
-- **Diseño de Cestas (¡NUEVO!)**:
-  - **Izquierda**: Cesta de Suma `(+)` y, debajo de ella, la Cesta de Resta `(-)`.
-  - **Otras cestas (Multiplicación, División) están temporalmente desactivadas**.
+- **Diseño de Cestas (COMPLETADO)**:
+  - **Izquierda**: Cesta de Suma `(+)` y Cesta de Resta `(-)`.
+  - **Derecha**: Cesta de Multiplicación `(x)` y Cesta de División `(/)`.
 - **Validación de Operaciones**:
   - **Suma**: `resultado = a + b`
   - **Resta**: `resultado = mayor - menor` (para evitar negativos).
+  - **Multiplicación**: `resultado = a * b`
+  - **División**: `resultado = mayor / menor` (solo si la división es exacta, sin decimales).
 - **Mecánica de Resultado (Fluida)**:
   - Al soltar dos cubos en una cesta, estos desaparecen.
   - Un **nuevo cubo** con el resultado aparece **directamente en el centro de la cesta correspondiente**.
@@ -42,10 +44,10 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 
 1.  **Fase de Selección**: El jugador elige la cantidad de números grandes.
 2.  **Comienza la Ronda**: El tablero se puebla con los 6 cubos iniciales. Se muestra el número objetivo.
-3.  **Aparición de Cestas**: Tras unos segundos, las cestas de suma y resta aparecen a la izquierda.
+3.  **Aparición de Cestas**: Tras unos segundos, las cuatro cestas de operaciones aparecen en el tablero.
 4.  **Resolución del Puzle**:
-    - El jugador arrastra dos cubos a la cesta de suma o resta.
-    - Los dos cubos desaparecen y un nuevo cubo con el resultado aparece en la cesta usada.
+    - El jugador arrastra dos cubos a cualquiera de las cuatro cestas.
+    - Si la operación es válida, los dos cubos desaparecen y un nuevo cubo con el resultado aparece en la cesta usada.
 5.  **Victoria**: Si un cubo coincide con el número objetivo, se muestra la pantalla de victoria.
 6.  **Controles**: Un botón de "Nueva Selección" permite reiniciar.
 
@@ -54,7 +56,7 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 - **`App.svelte`**: Gestiona el cambio entre `NumberSelection` y `Game`.
 - **`NumberSelection.svelte`**: UI para elegir los números.
 - **`Game.svelte`**: Orquestador principal del juego.
-- **`Board.svelte`**: Motor de físicas. Gestiona las zonas de suma y resta.
+- **`Board.svelte`**: Motor de físicas. Gestiona las cuatro zonas de operaciones.
 - **`Cube.svelte`**: Componente del cubo.
 - **`Basket.svelte`**: Visualización de las cestas.
 
@@ -62,6 +64,9 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 
 ## Plan Actual
 
-1.  Añadir las cestas de multiplicación `(x)` y división `(/)` a la derecha del tablero.
-2.  Implementar la lógica de cálculo para la multiplicación y la división en `Game.svelte`.
-3.  Asegurarse de que las reglas del juego para la división (sin decimales, solo división exacta) se implementen correctamente.
+- **¡Funcionalidad principal completada!**
+- Posibles siguientes pasos:
+  - Mejorar la estética y las animaciones.
+  - Añadir un temporizador para la ronda.
+  - Implementar un sistema de puntuación.
+  - Añadir sonidos para las operaciones y la victoria.

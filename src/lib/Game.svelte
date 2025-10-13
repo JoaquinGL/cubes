@@ -63,14 +63,30 @@
 
     if (!numA || !numB) return;
 
-    let result: number;
-    if (operation === 'suma') {
-      result = numA.value + numB.value;
-    } else if (operation === 'resta') {
-      result = Math.max(numA.value, numB.value) - Math.min(numA.value, numB.value);
-    } else {
-      return; 
+    let result: number | null = null;
+    const valA = numA.value;
+    const valB = numB.value;
+
+    switch (operation) {
+      case 'suma':
+        result = valA + valB;
+        break;
+      case 'resta':
+        result = Math.max(valA, valB) - Math.min(valA, valB);
+        break;
+      case 'multiplicacion':
+        result = valA * valB;
+        break;
+      case 'division':
+        const maxVal = Math.max(valA, valB);
+        const minVal = Math.min(valA, valB);
+        if (minVal !== 0 && maxVal % minVal === 0) {
+          result = maxVal / minVal;
+        }
+        break;
     }
+
+    if (result === null) return; // Si la operación no fue válida (división no entera)
     
     const targetZone = zones.find(z => z.label === operation);
     if (!targetZone) return; 
