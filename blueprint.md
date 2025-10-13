@@ -28,23 +28,24 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 
 #### ⚙️ Reglas de Cálculo
 - **Uso Único**: Cada cubo solo puede usarse una vez.
-- **Diseño de Cestas (Iteración Actual: Solo Suma)**:
-  - **Izquierda**: Cesta de Suma `(+)`.
-  - **Otras cestas (Resta, Multiplicación, División) están temporalmente desactivadas**.
+- **Diseño de Cestas (¡NUEVO!)**:
+  - **Izquierda**: Cesta de Suma `(+)` y, debajo de ella, la Cesta de Resta `(-)`.
+  - **Otras cestas (Multiplicación, División) están temporalmente desactivadas**.
 - **Validación de Operaciones**:
-  - Por ahora, solo se implementará la suma.
-- **Mecánica de Resultado (¡MEJORADA!)**:
-  - Al soltar dos cubos en la cesta de suma, estos desaparecen.
-  - Un **nuevo cubo** con el resultado de la suma aparece **directamente en el centro de la cesta de suma**, eliminando cambios bruscos.
+  - **Suma**: `resultado = a + b`
+  - **Resta**: `resultado = mayor - menor` (para evitar negativos).
+- **Mecánica de Resultado (Fluida)**:
+  - Al soltar dos cubos en una cesta, estos desaparecen.
+  - Un **nuevo cubo** con el resultado aparece **directamente en el centro de la cesta correspondiente**.
 
 ### 3. Flujo de Juego Detallado
 
 1.  **Fase de Selección**: El jugador elige la cantidad de números grandes.
 2.  **Comienza la Ronda**: El tablero se puebla con los 6 cubos iniciales. Se muestra el número objetivo.
-3.  **Aparición de Cestas**: Tras unos segundos, la cesta de suma aparece en su posición a la izquierda.
-4.  **Resolución del Puzle (Suma)**:
-    - El jugador arrastra dos cubos a la cesta de suma.
-    - Los dos cubos desaparecen y un nuevo cubo con el resultado aparece en la cesta.
+3.  **Aparición de Cestas**: Tras unos segundos, las cestas de suma y resta aparecen a la izquierda.
+4.  **Resolución del Puzle**:
+    - El jugador arrastra dos cubos a la cesta de suma o resta.
+    - Los dos cubos desaparecen y un nuevo cubo con el resultado aparece en la cesta usada.
 5.  **Victoria**: Si un cubo coincide con el número objetivo, se muestra la pantalla de victoria.
 6.  **Controles**: Un botón de "Nueva Selección" permite reiniciar.
 
@@ -53,7 +54,7 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 - **`App.svelte`**: Gestiona el cambio entre `NumberSelection` y `Game`.
 - **`NumberSelection.svelte`**: UI para elegir los números.
 - **`Game.svelte`**: Orquestador principal del juego.
-- **`Board.svelte`**: Motor de físicas. **Solo mostrará y gestionará la cesta de suma.**
+- **`Board.svelte`**: Motor de físicas. Gestiona las zonas de suma y resta.
 - **`Cube.svelte`**: Componente del cubo.
 - **`Basket.svelte`**: Visualización de las cestas.
 
@@ -61,7 +62,6 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 
 ## Plan Actual
 
-1.  **Simplificar `Board.svelte`** para que solo muestre una cesta de suma más ancha.
-2.  **Simplificar `Game.svelte`** para que solo procese la operación de suma.
-3.  Probar y validar la funcionalidad de la cesta de suma.
-4.  Añadir progresivamente el resto de las cestas (resta, multiplicación, división) en futuras iteraciones.
+1.  Añadir las cestas de multiplicación `(x)` y división `(/)` a la derecha del tablero.
+2.  Implementar la lógica de cálculo para la multiplicación y la división en `Game.svelte`.
+3.  Asegurarse de que las reglas del juego para la división (sin decimales, solo división exacta) se implementen correctamente.

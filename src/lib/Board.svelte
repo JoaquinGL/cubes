@@ -13,7 +13,10 @@
   let world: Matter.World | null = null;
   let renderLoop: number;
 
-  const sumaBasketState: { [bodyId: number]: { body: Matter.Body; timer: number | null; marked: boolean } } = {};
+  const basketStates: { [key: string]: { [bodyId: number]: { body: Matter.Body; timer: number | null; marked: boolean } } } = {
+    suma: {},
+    resta: {}
+  };
 
   let zones: { label: string; x: number; y: number; width: number; height: number; bounds: Matter.Bounds }[] = [];
   let basketsActivated = false;
@@ -28,14 +31,14 @@
   function activateBaskets() {
     if (!world || !container) return;
     const boardWidth = container.clientWidth;
-    const boardHeight = 600;
     const basketWidth = 200;
     const basketHeight = 120;
     const wallThickness = 20;
     const sideMargin = 150;
 
     const basketPositions = {
-      suma: { x: sideMargin, y: boardHeight / 2 },
+      suma: { x: sideMargin, y: 200 },
+      resta: { x: sideMargin, y: 400 }
     };
     
     zones.forEach(zone => {
@@ -62,7 +65,8 @@
     const sideMargin = 150;
 
     const basketPositions = {
-      suma: { x: sideMargin, y: boardHeight / 2 },
+      suma: { x: sideMargin, y: 200 },
+      resta: { x: sideMargin, y: 400 }
     };
     
     zones = Object.keys(basketPositions).map(label => {
@@ -74,38 +78,40 @@
     function gameLoop() {
       if (!world) return;
       const allCubes = Matter.Composite.allBodies(world).filter(b => b.label.startsWith('cube'));
-      const sumaZone = zones.find(z => z.label === 'suma');
+      
+      zones.forEach(zone => {
+        const zoneState = basketStates[zone.label];
+        if (zoneState && basketsVisible) {
+          allCubes.forEach(cube => {
+            const isInside = Matter.Bounds.contains(zone.bounds, cube.position);
+            const state = zoneState[cube.id];
 
-      if (sumaZone && basketsVisible) {
-        allCubes.forEach(cube => {
-          const isInside = Matter.Bounds.contains(sumaZone.bounds, cube.position);
-          const state = sumaBasketState[cube.id];
+            if (isInside && !state) {
+              const timer = window.setTimeout(() => {
+                if (zoneState[cube.id]) {
+                  zoneState[cube.id].marked = true;
+                }
+              }, 1000);
+              zoneState[cube.id] = { body: cube, timer, marked: false };
+            } else if (!isInside && state) {
+              if (state.timer) clearTimeout(state.timer);
+              delete zoneState[cube.id];
+            }
+          });
 
-          if (isInside && !state) {
-            const timer = window.setTimeout(() => {
-              if (sumaBasketState[cube.id]) {
-                sumaBasketState[cube.id].marked = true;
-              }
-            }, 1000);
-            sumaBasketState[cube.id] = { body: cube, timer, marked: false };
-          } else if (!isInside && state) {
-            if (state.timer) clearTimeout(state.timer);
-            delete sumaBasketState[cube.id];
+          const markedCubes = Object.values(zoneState).filter(s => s.marked);
+
+          if (markedCubes.length === 2) {
+            const bodyA = markedCubes[0].body;
+            const bodyB = markedCubes[1].body;
+            
+            dispatch('operation', { bodyA, bodyB, operation: zone.label, boardWidth: container.clientWidth });
+            delete zoneState[bodyA.id];
+            delete zoneState[bodyB.id];
           }
-        });
-
-        const markedCubes = Object.values(sumaBasketState).filter(s => s.marked);
-
-        if (markedCubes.length === 2) {
-          const bodyA = markedCubes[0].body;
-          const bodyB = markedCubes[1].body;
-          
-          dispatch('operation', { bodyA, bodyB, operation: 'suma', boardWidth: container.clientWidth });
-          delete sumaBasketState[bodyA.id];
-          delete sumaBasketState[bodyB.id];
         }
-      }
-      // EL CÓDIGO CONFLICTIVO HA SIDO ELIMINADO DE AQUÍ
+      });
+
       renderLoop = requestAnimationFrame(gameLoop);
     }
 
@@ -123,9 +129,11 @@
 
   onDestroy(() => {
     cancelAnimationFrame(renderLoop);
-    for (const id in sumaBasketState) {
-        if(sumaBasketState[id].timer) clearTimeout(sumaBasketState[id].timer);
-    }
+    Object.values(basketStates).forEach(zoneState => {
+      for (const id in zoneState) {
+        if(zoneState[id].timer) clearTimeout(zoneState[id].timer);
+      }
+    });
   });
 </script>
 

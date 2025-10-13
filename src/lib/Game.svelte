@@ -54,8 +54,7 @@
   
   function handleOperation(event: CustomEvent<{ bodyA: Matter.Body, bodyB: Matter.Body, operation: string }>) {
     const { bodyA, bodyB, operation } = event.detail;
-    if (operation !== 'suma') return;
-
+    
     const idA = parseInt(bodyA.label.split('-')[1]);
     const idB = parseInt(bodyB.label.split('-')[1]);
 
@@ -64,14 +63,20 @@
 
     if (!numA || !numB) return;
 
-    const result = numA.value + numB.value;
+    let result: number;
+    if (operation === 'suma') {
+      result = numA.value + numB.value;
+    } else if (operation === 'resta') {
+      result = Math.max(numA.value, numB.value) - Math.min(numA.value, numB.value);
+    } else {
+      return; 
+    }
     
-    const sumaZone = zones.find(z => z.label === 'suma');
-    if (!sumaZone) return; // No se puede crear el cubo si la zona no existe
+    const targetZone = zones.find(z => z.label === operation);
+    if (!targetZone) return; 
 
-    // TU SOLUCIÓN: Usar las coordenadas de la cesta de suma para el nuevo cubo.
-    const dropX = sumaZone.x;
-    const dropY = sumaZone.y;
+    const dropX = targetZone.x;
+    const dropY = targetZone.y;
 
     removeNumbers([numA.id, numB.id]);
     addNumber(result, dropX, dropY);
