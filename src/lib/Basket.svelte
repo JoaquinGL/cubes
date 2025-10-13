@@ -1,50 +1,41 @@
 
 <script lang="ts">
-    export let x: number;
-    export let y: number;
-    export let width: number;
-    export let height: number;
-    export let label: string;
+  export let label: string;
+  export let x: number;
+  export let y: number;
+  export let width: number;
+  export let height: number;
 
-    // Mapa para traducir etiquetas a símbolos
-    const symbols: { [key: string]: string } = {
-        suma: '+',
-        resta: '-',
-        multiplicar: '×',
-        dividir: '÷',
-    };
+  const symbols: { [key: string]: string } = {
+    suma: '+',
+    resta: '-',
+    multiplicacion: '×',
+    division: '÷'
+  };
 
+  const symbol = symbols[label] || '?';
 </script>
 
-<div 
-  class="basket-zone"
-  style="left: {x - width/2}px; top: {y - height/2}px; width: {width}px; height: {height}px;"
->
-    <!-- Mostramos el símbolo correspondiente -->
-    <span class="label">{symbols[label] || ''}</span>
+<div class="basket" style="left: {x - width / 2}px; top: {y - height / 2}px; width: {width}px; height: {height}px;">
+  <div class="symbol">{symbol}</div>
 </div>
 
 <style>
-  .basket-zone {
+  .basket {
     position: absolute;
-    border: 3px dashed #cdbda1;
+    border: 4px dashed #a0522d;
     border-radius: 15px;
-    background-color: rgba(239, 227, 201, 0.5);
-    box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.5s ease-in-out;
+    background-color: rgba(210, 105, 30, 0.05);
   }
 
-  .label {
-      font-family: monospace; /* Fuente más adecuada para símbolos matemáticos */
-      font-size: 3rem; /* Símbolo más grande y claro */
-      font-weight: bold;
-      color: #a0522d;
-      opacity: 0.8;
-      /* Centrado vertical del símbolo, que a veces se desalinea */
-      line-height: 1;
-      padding-bottom: 5px;
+  .symbol {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 4rem;
+    color: rgba(139, 69, 19, 0.3);
+    font-weight: bold;
+    user-select: none;
   }
 </style>
