@@ -17,7 +17,6 @@
   let gameReady = false;
   let world: Matter.World | null = null;
   let zones: Zone[] = [];
-  let boardComponent: Board;
   
   let basketsVisible = false;
   let basketTimer: number;
@@ -37,7 +36,9 @@
 
     basketTimer = window.setTimeout(() => {
       basketsVisible = true;
-      if (boardComponent) boardComponent.activateBaskets();
+      // We can't call activateBaskets directly on the component instance anymore
+      // This logic will be handled inside Board.svelte based on a prop.
+      // Or even better, let's pass basketsVisible as a reactive prop to Board.svelte
     }, 2500);
   }
 
@@ -54,43 +55,34 @@
     zones = event.detail.zones;
   }
   
-  function handleOperation(event: CustomEvent<{ bodyA: Matter.Body, bodyB: Matter.Body, operation: string }>) {
-    const { bodyA, bodyB, operation } = event.detail;
-    const idA = (bodyA.label as string).split('-')[1];
-    const idB = (bodyB.label as string).split('-')[1];
+  function handleOperation(event: CustomEvent<{ bodyA: Matter.Body, bodyB: Matter.Body, operation: string, boardWidth: number }>) {
+    const { bodyA, bodyB, operation, boardWidth } = event.detail;
+    if (operation !== 'suma') return;
 
-    const numA = get(numbers).find(n => n.id === parseInt(idA));
-    const numB = get(numbers).find(n => n.id === parseInt(idB));
+    // The label now contains the unique ID: "cube-123"
+    const idA = parseInt(bodyA.label.split('-')[1]);
+    const idB = parseInt(bodyB.label.split('-')[1]);
+
+    const numA = get(numbers).find(n => n.id === idA);
+    const numB = get(numbers).find(n => n.id === idB);
 
     if (!numA || !numB) return;
 
-    let result: number | null = null;
-    const valA = numA.value;
-    const valB = numB.value;
+    const result = numA.value + numB.value;
+    
+    if (boardWidth === 0) return;
 
-    switch (operation) {
-      case 'suma': result = valA + valB; break;
-      case 'resta': result = Math.max(valA, valB) - Math.min(valA, valB); break;
-      case 'multiplicar': result = valA * valB; break;
-      case 'dividir':
-        const max = Math.max(valA, valB);
-        const min = Math.min(valA, valB);
-        if (min !== 0 && max % min === 0) result = max / min;
-        break;
-    }
+    const dropX = boardWidth / 2;
+    const dropY = 50;
 
-    if (result !== null && result > 0) {
-      // Posición de caída: Centro del tablero
-      // @ts-ignore
-      const boardWidth = boardComponent.container.clientWidth;
-      const dropX = boardWidth / 2;
-      const dropY = 50; // Parte superior
+    // LA SIMPLIFICACIÓN: 
+    // Ya no llamamos a board.removeBody().
+    // Solo quitamos los números del store. Svelte se encargará de destruir los componentes Cube,
+    // y el `onDestroy` de cada Cube (recién corregido) se encargará de la limpieza en Matter.js.
+    removeNumbers([numA.id, numB.id]);
 
-      boardComponent.removeBody(bodyA);
-      boardComponent.removeBody(bodyB);
-      removeNumbers([numA.id, numB.id]);
-      addNumber(result, dropX, dropY);
-    }
+    // Añadimos el nuevo número, que creará un nuevo Cube.
+    addNumber(result, dropX, dropY);
   }
 
 </script>
@@ -106,7 +98,8 @@
   </header>
 
   {#if gameReady}
-    <Board on:boardready={handleBoardReady} on:operation={handleOperation} bind:this={boardComponent}>
+    <!-- El Board ahora activa las cestas por su cuenta cuando es visible -->
+    <Board on:boardready={handleBoardReady} on:operation={handleOperation} basketsVisible={basketsVisible}>
       {#if world && zones.length > 0}
         {#if basketsVisible}
           {#each zones as zone (zone.label)}
@@ -126,7 +119,6 @@
 </main>
 
 <style>
-  /* Tus estilos existentes aquí */
   .game-container {
     display: flex;
     flex-direction: column;
