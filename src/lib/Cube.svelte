@@ -14,40 +14,50 @@
   let body: Matter.Body;
 
   const initialX = x !== undefined ? x : Math.random() * 400 + 50;
-  const initialY = y !== undefined ? y : Math.random() * 100;
+  const initialY = y !== undefined ? y : 50; // Posición inicial de caída
 
   onMount(() => {
-    const { Bodies, World } = Matter;
+    const { Bodies } = Matter;
     
     body = Bodies.rectangle(initialX, initialY, 70, 70, {
       restitution: 0.5,
       friction: 0.1,
-      label: 'Cube Body'
+      label: `cube-${id}`
     });
 
     (body as any).element = element;
-    (body as any).cubeId = id;
-    (body as any).cubeValue = number;
 
-    World.add(world, body);
+    Matter.World.add(world, body);
 
+    // ESTA ES LA LÓGICA DE SINCRONIZACIÓN RESTAURADA
+    let renderLoop: number;
     function update() {
-      if (body && element && !body.isStatic) { // <-- ¡LA CORRECCIÓN CLAVE!
+      if (body && element) {
         element.style.transform = `translate(${body.position.x - 35}px, ${body.position.y - 35}px) rotate(${body.angle}rad)`;
       }
-      requestAnimationFrame(update);
+      renderLoop = requestAnimationFrame(update);
     }
     update();
+
+    // Limpieza del bucle al destruir el componente
+    return () => {
+        cancelAnimationFrame(renderLoop);
+    }
   });
 
   onDestroy(() => {
     if (world && body) {
-      World.remove(world, body);
+      Matter.World.remove(world, body);
     }
   });
 </script>
 
-<div class="cube" bind:this={element} in:scale={{ duration: 300, start: 0.5 }}>
+<!-- Eliminamos el style="top, left" que causaba el conflicto -->
+<div 
+  class="cube"
+  bind:this={element}
+  in:scale={{ duration: 300, start: 0.5 }}
+>
   <span>{number}</span>
 </div>
 

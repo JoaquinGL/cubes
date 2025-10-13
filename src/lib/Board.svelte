@@ -18,7 +18,6 @@
   let zones: { label: string; x: number; y: number; width: number; height: number; bounds: Matter.Bounds }[] = [];
   let basketsActivated = false;
 
-  // When the basketsVisible prop becomes true, create the physical walls.
   afterUpdate(() => {
     if (basketsVisible && !basketsActivated) {
       activateBaskets();
@@ -106,16 +105,7 @@
           delete sumaBasketState[bodyB.id];
         }
       }
-
-      const bodies = Matter.Composite.allBodies(world);
-      bodies.forEach(body => {
-        if ((body as any).element) {
-          const element = (body as any).element as HTMLElement;
-          const size = element.offsetWidth;
-          element.style.transform = `translate(${body.position.x - size / 2}px, ${body.position.y - size / 2}px) rotate(${body.angle}rad)`;
-        }
-      });
-
+      // EL CÓDIGO CONFLICTIVO HA SIDO ELIMINADO DE AQUÍ
       renderLoop = requestAnimationFrame(gameLoop);
     }
 

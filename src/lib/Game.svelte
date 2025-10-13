@@ -36,9 +36,6 @@
 
     basketTimer = window.setTimeout(() => {
       basketsVisible = true;
-      // We can't call activateBaskets directly on the component instance anymore
-      // This logic will be handled inside Board.svelte based on a prop.
-      // Or even better, let's pass basketsVisible as a reactive prop to Board.svelte
     }, 2500);
   }
 
@@ -59,7 +56,6 @@
     const { bodyA, bodyB, operation, boardWidth } = event.detail;
     if (operation !== 'suma') return;
 
-    // The label now contains the unique ID: "cube-123"
     const idA = parseInt(bodyA.label.split('-')[1]);
     const idB = parseInt(bodyB.label.split('-')[1]);
 
@@ -73,15 +69,10 @@
     if (boardWidth === 0) return;
 
     const dropX = boardWidth / 2;
+    // REVERTIDO: Volvemos a la posición de caída original y estable.
     const dropY = 50;
 
-    // LA SIMPLIFICACIÓN: 
-    // Ya no llamamos a board.removeBody().
-    // Solo quitamos los números del store. Svelte se encargará de destruir los componentes Cube,
-    // y el `onDestroy` de cada Cube (recién corregido) se encargará de la limpieza en Matter.js.
     removeNumbers([numA.id, numB.id]);
-
-    // Añadimos el nuevo número, que creará un nuevo Cube.
     addNumber(result, dropX, dropY);
   }
 
@@ -98,7 +89,6 @@
   </header>
 
   {#if gameReady}
-    <!-- El Board ahora activa las cestas por su cuenta cuando es visible -->
     <Board on:boardready={handleBoardReady} on:operation={handleOperation} basketsVisible={basketsVisible}>
       {#if world && zones.length > 0}
         {#if basketsVisible}
