@@ -1,40 +1,50 @@
 
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { numbers, target, generateNewRound } from './stores';
   import Board from './Board.svelte';
   import Cube from './Cube.svelte';
   import Basket from './Basket.svelte';
-  import { fade } from 'svelte/transition';
   import type Matter from 'matter-js';
 
+  type Zone = { label: string; x: number; y: number; width: number; height: number; };
+
   let gameReady = false;
-  let showBaskets = false;
   let world: Matter.World | null = null;
-  let boardWidth = 0;
-  let boardHeight = 0;
+  let zones: Zone[] = [];
+  let boardComponent: Board; // Referencia al componente Board
+  
+  let basketsVisible = false;
+  let basketTimer: number;
 
-  let basketStates = new Map<number, { count: number }>();
-
-  onMount(() => {
+  function startNewRound() {
+    basketsVisible = false;
+    zones = [];
+    world = null;
+    
     generateNewRound();
     gameReady = true;
 
-    // Retrasamos la aparición de las cestas
-    setTimeout(() => {
-      showBaskets = true;
-    }, 1500);
-  });
-
-  function handleBoardReady(event: CustomEvent<{ world: Matter.World; width: number; height: number }>) {
-    world = event.detail.world;
-    boardWidth = event.detail.width;
-    boardHeight = event.detail.height;
+    basketTimer = window.setTimeout(() => {
+      basketsVisible = true;
+      // Al mismo tiempo que hacemos visible, activamos las físicas
+      if (boardComponent) {
+        boardComponent.activateBaskets();
+      }
+    }, 2500);
   }
 
-  function handleBasketUpdate(event: CustomEvent<{ basketId: number, count: number }>) {
-      basketStates.set(event.detail.basketId, { count: event.detail.count });
-      basketStates = basketStates; // Forzamos la reactividad
+  onMount(() => {
+    startNewRound();
+  });
+
+  onDestroy(() => {
+    clearTimeout(basketTimer);
+  });
+
+  function handleBoardReady(event: CustomEvent<{ world: Matter.World, zones: Zone[] }>) {
+    world = event.detail.world;
+    zones = event.detail.zones;
   }
 
 </script>
@@ -46,35 +56,30 @@
   </header>
 
   {#if gameReady}
-    <Board on:boardready={handleBoardReady} on:basketupdate={handleBasketUpdate}>
-      {#if world && boardWidth > 0}
-        <!-- Cubos -->
+    <!-- Vinculamos el componente a nuestra variable `boardComponent` -->
+    <Board on:boardready={handleBoardReady} bind:this={boardComponent}>
+      {#if world && zones.length > 0}
+        {#if basketsVisible}
+          {#each zones as zone (zone.label)}
+            <Basket {...zone} />
+          {/each}
+        {/if}
+
         {#each $numbers as num (num.id)}
           <Cube id={num.id} number={num.value} world={world} x={num.x} y={num.y} />
         {/each}
 
-        <!-- Cestas de Operaciones -->
-        {#if showBaskets}
-            <div in:fade={{ duration: 500 }}>
-                <Basket id={1} operation="add" x={boardWidth * 1 / 5} y={boardHeight / 2} cubesInside={basketStates.get(1)?.count ?? 0} />
-            </div>
-            <div in:fade={{ duration: 500, delay: 200 }}>
-                <Basket id={2} operation="subtract" x={boardWidth * 2 / 5} y={boardHeight / 2} cubesInside={basketStates.get(2)?.count ?? 0} />
-            </div>
-            <div in:fade={{ duration: 500, delay: 400 }}>
-                <Basket id={3} operation="multiply" x={boardWidth * 3 / 5} y={boardHeight / 2} cubesInside={basketStates.get(3)?.count ?? 0} />
-            </div>
-            <div in:fade={{ duration: 500, delay: 600 }}>
-                <Basket id={4} operation="divide" x={boardWidth * 4 / 5} y={boardHeight / 2} cubesInside={basketStates.get(4)?.count ?? 0} />
-            </div>
-        {/if}
-
       {/if}
     </Board>
   {/if}
+
+  <div class="controls">
+    <button on:click={startNewRound}>Reset Total</button>
+  </div>
 </div>
 
 <style>
+  /* ... (estilos sin cambios) ... */
   .game-container {
     display: flex;
     flex-direction: column;
@@ -87,21 +92,39 @@
       margin-bottom: 1rem;
   }
 
-  header h1 {
-    font-size: 2.5rem;
-    color: #5d4037;
-    margin: 0;
+  header h1 { font-size: 2.5rem; color: #5d4037; margin: 0; }
+  .target-display { font-size: 1.8rem; color: #8b4513; margin-top: 0.5rem; }
+  .target-display span { font-weight: bold; color: #d2691e; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+
+  .controls {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
   }
 
-  .target-display {
-      font-size: 1.8rem;
-      color: #8b4513;
-      margin-top: 0.5rem;
+  button {
+    font-family: 'Patrick Hand', cursive;
+    font-size: 1.2rem;
+    padding: 0.5em 1.2em;
+    background-color: #d2691e;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
-  .target-display span {
-      font-weight: bold;
-      color: #d2691e;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  button:hover {
+    background-color: #a0522d;
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+  }
+
+  button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
   }
 </style>

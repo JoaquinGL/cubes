@@ -14,56 +14,48 @@ El proyecto está construido con **Svelte** y **TypeScript**, aprovechando la re
 ### 1. Estructura de Componentes
 
 - **`App.svelte`**: Componente raíz.
-- **`Game.svelte`**: Orquesta el estado del juego y la UI.
-- **`Board.svelte`**: Gestiona el motor `Matter.js` y toda la lógica de interacción.
-- **`Cube.svelte`**: Representa un cubo numerado y arrastrable.
-- **`Basket.svelte`**: Representa una cesta de operaciones.
+- **`Game.svelte`**: Orquesta el estado del juego, la UI y los controles de reseteo.
+- **`Board.svelte`**: Gestiona el motor `Matter.js` y la lógica de detección en la cesta.
+- **`Cube.svelte`**: Representa un cubo numerado y arrastrable, con estilo dinámico.
+- **`Basket.svelte`**: Representa el contorno visual de la cesta.
 - **`Victory.svelte`**: Modal de victoria que aparece al completar el objetivo.
 
 ### 2. Lógica y Estado (Stores)
 
-- **`numbers`**: Almacena los cubos activos.
+- **`numbers`**: Almacena los cubos activos, incluyendo su estado (si es resultado de una suma).
 - **`target`**: Almacena el número objetivo de la ronda.
 - **`generateNewRound`**: Función para generar un nuevo puzle.
 
 ### 3. Mecánica de Juego y Físicas
 
 - **Motor de Físicas**: Basado en `Matter.js` para una simulación realista.
-- **Interacción de Arrastre**: Los jugadores pueden arrastrar y soltar cubos.
+- **Interacción de Arrastre**: Los jugadores pueden arrastrar y soltar cubos libremente.
 
-- **Mecánica de Cestas "Pegajosas" (Sticky Baskets)**:
-    - **Posicionamiento y Aparición**: Las cestas aparecen en el centro del tablero con una animación después de que los cubos iniciales se asienten.
-    - **Captura de Cubos (Sticking)**: Al soltar un cubo en una cesta vacía, este se queda "pegado".
-    - **Liberación de Cubos (Unsticking)**: Al volver a arrastrar un cubo pegado, este se libera.
-    - **Lógica de Operación**: La operación aritmética se ejecuta cuando se suelta un segundo cubo en una cesta que ya contiene uno.
-    - **Creación de Resultado**: Tras una operación, los dos cubos se eliminan y se crea un nuevo cubo con el resultado.
+- **Mecánica de Cesta Física (¡Pulida!)**:
+    - **Suma por Reposo**: La suma se ejecuta automáticamente cuando dos o más cubos están en reposo dentro de la cesta.
+    - **Sincronización Física-UI (¡Implementado!)**: Al realizarse una suma, los cuerpos físicos de los cubos originales se eliminan explícitamente del motor de físicas, asegurando que desaparecen correctamente. El nuevo cubo resultante se crea con su propio cuerpo físico, siendo totalmente interactivo.
+    - **Estilo para Cubos de Suma (¡Implementado!)**: Los cubos generados a partir de una suma tienen un color verde distintivo para diferenciarlos visualmente de los cubos originales.
 
-- **Condición de Victoria y Bucle de Juego (¡Implementado!)**:
-    - **Detección de Victoria**: El juego detecta si un cubo resultante de una operación coincide con el número objetivo.
-    - **Pantalla de Victoria**: Al ganar, se muestra un modal de celebración con animaciones.
-    - **Jugar de Nuevo**: El jugador puede iniciar una nueva ronda directamente desde la pantalla de victoria, creando un bucle de juego completo.
+- **Controles de Juego**:
+    - **Deshacer Suma**: Un botón que permite revertir la última operación de suma, restaurando los cubos anteriores.
+    - **Reset Total**: Un botón que permite reiniciar la ronda por completo, generando un nuevo número objetivo y una nueva configuración de cubos.
 
-### 4. Flujo de Juego Completo
+- **Condición de Victoria y Bucle de Juego**:
+    - **Detección de Victoria**: El juego detecta si un cubo (original o de suma) coincide con el número objetivo.
+    - **Pantalla de Victoria y Reinicio**: El bucle de juego con el modal de victoria y el botón de reinicio sigue siendo funcional.
 
-1.  El usuario ve un número objetivo y varios cubos que caen en el tablero.
-2.  Las cestas de operaciones aparecen en el centro.
-3.  El usuario arrastra un cubo a una cesta, donde se queda pegado.
-4.  El usuario arrastra un segundo cubo a la misma cesta, ejecutando la operación.
-5.  Se genera un nuevo cubo con el resultado.
-6.  El jugador repite el proceso hasta que el valor de un cubo resultante es igual al objetivo.
-7.  **¡Victoria!** Se muestra la pantalla de victoria, desde donde se puede reiniciar la partida.
+### 4. Flujo de Juego Actual
+
+1.  El usuario ve un número objetivo y varios cubos amarillos que caen en el tablero.
+2.  Arrastra y suelta los cubos en la cesta física de la parte inferior.
+3.  Cuando dos cubos se detienen, desaparecen y se fusionan en un nuevo **cubo verde** con la suma de sus valores. Este nuevo cubo es completamente interactivo.
+4.  El jugador puede usar el botón **"Deshacer Suma"** si comete un error, lo que hará que los cubos originales reaparezcan.
+5.  El botón **"Reset Total"** está disponible para empezar una nueva ronda en cualquier momento.
+6.  El juego continúa hasta que un cubo coincide con el número objetivo.
+7.  **¡Victoria!** Se muestra la pantalla de celebración.
 
 ---
 
-## Estado del Proyecto: ¡Completado!
+## Estado del Proyecto: ¡Juego Pulido y Funcional!
 
-**¡FUNCIONALIDAD PRINCIPAL COMPLETADA!**
-
-El bucle de juego está finalizado. El jugador puede empezar una partida, jugar hasta ganar y reiniciar. Hemos implementado con éxito una mecánica de juego interactiva y única.
-
-### Ideas para Futuras Mejoras (Opcional)
-
--   **Efectos de Sonido**: Añadir sonidos para la colisión de cubos, operaciones y victoria para una experiencia más inmersiva.
--   **Animaciones Adicionales**: Pulir las animaciones, como la desaparición de los cubos.
--   **Niveles de Dificultad**: Introducir diferentes niveles que ajusten la complejidad de los números.
--   **Puntuación o Temporizador**: Añadir un sistema de puntuación para un mayor desafío competitivo.
+Se han corregido los problemas de sincronización entre la UI de Svelte y el motor de físicas Matter.js. La mecánica de suma ahora es visualmente coherente y funcionalmente robusta. La adición de un estilo distintivo para los cubos resultantes mejora significativamente la claridad del juego.
