@@ -1,72 +1,50 @@
 
 <script lang="ts">
-  import { onMount, createEventDispatcher } from 'svelte';
-  import Matter from 'matter-js';
+    export let x: number;
+    export let y: number;
+    export let width: number;
+    export let height: number;
+    export let label: string;
 
-  export let id: number;
-  export let x: number;
-  export let y: number;
-  export let width: number = 180;
-  export let height: number = 120;
-  export let operation: 'add' | 'subtract' | 'multiply' | 'divide' = 'add';
-  export let cubesInside: number = 0;
-
-  const dispatch = createEventDispatcher();
-
-  onMount(() => {
-    const { Bodies } = Matter;
-    const basketBody = Bodies.rectangle(x, y, width, height, {
-      isStatic: true,
-      isSensor: true,
-      label: 'Basket Body',
-      render: { visible: false }
-    });
-
-    (basketBody as any).operation = operation;
-    basketBody.id = id; // Asignamos el ID al cuerpo
-
-    dispatch('basketcreated', { body: basketBody });
-  });
-
-  const operationSymbols = {
-      add: '+',
-      subtract: '−',
-      multiply: '×',
-      divide: '÷'
-  }
+    // Mapa para traducir etiquetas a símbolos
+    const symbols: { [key: string]: string } = {
+        suma: '+',
+        resta: '-',
+        multiplicar: '×',
+        dividir: '÷',
+    };
 
 </script>
 
-<div class="basket-container" class:active={cubesInside > 0} style="left: {x - width / 2}px; top: {y - height / 2}px; width: {width}px; height: {height}px;">
-  <div class="basket-label">{operationSymbols[operation]}</div>
+<div 
+  class="basket-zone"
+  style="left: {x - width/2}px; top: {y - height/2}px; width: {width}px; height: {height}px;"
+>
+    <!-- Mostramos el símbolo correspondiente -->
+    <span class="label">{symbols[label] || ''}</span>
 </div>
 
 <style>
-  .basket-container {
+  .basket-zone {
     position: absolute;
-    background-color: rgba(160, 82, 45, 0.05);
-    border: 3px dashed #a0522d;
+    border: 3px dashed #cdbda1;
     border-radius: 15px;
+    background-color: rgba(239, 227, 201, 0.5);
+    box-sizing: border-box;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition: all 0.5s ease-in-out;
   }
 
-  .basket-container.active {
-    background-color: rgba(139, 69, 19, 0.2);
-    border-color: #8b4513;
-  }
-
-  .basket-label {
-    font-size: 4em;
-    font-weight: bold;
-    color: #a0522d;
-    opacity: 0.5;
-    transition: opacity 0.3s ease;
-  }
-
-  .basket-container.active .basket-label {
+  .label {
+      font-family: monospace; /* Fuente más adecuada para símbolos matemáticos */
+      font-size: 3rem; /* Símbolo más grande y claro */
+      font-weight: bold;
+      color: #a0522d;
       opacity: 0.8;
+      /* Centrado vertical del símbolo, que a veces se desalinea */
+      line-height: 1;
+      padding-bottom: 5px;
   }
 </style>

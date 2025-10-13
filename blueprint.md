@@ -1,61 +1,83 @@
 
-# Blueprint: Cubos & Cestas - Juego de Aritmética con Físicas
+# Blueprint: Cubos & Cestas - El Desafío Aritmético
 
 ## Visión General
 
-`Cubos & Cestas` es un juego web interactivo diseñado para agudizar las habilidades de cálculo mental de una manera lúdica y atractiva. Los jugadores combinan cubos numerados usando operaciones aritméticas básicas para alcanzar un número objetivo. La aplicación destaca por su motor de físicas (`Matter.js`), que permite una interacción táctil y dinámica con los elementos del juego.
+`Cubos & Cestas` es una adaptación interactiva del clásico juego de cálculo "Cifras y Letras". El objetivo es utilizar seis números generados aleatoriamente para alcanzar, o aproximarse lo máximo posible, a una cifra objetivo de tres dígitos mediante operaciones aritméticas básicas. La aplicación utiliza un motor de físicas (`Matter.js`) para una interacción táctil y atractiva, donde los números son "cubos" que se arrastran a "cestas" de operaciones.
 
-El proyecto está construido con **Svelte** y **TypeScript**, aprovechando la reactividad y eficiencia de Svelte para crear una experiencia de usuario fluida y declarativa.
+El proyecto está construido con **Svelte** y **TypeScript**, buscando una experiencia de usuario fluida, reactiva y educativa.
 
 ---
 
 ## Esquema del Proyecto y Características
 
-### 1. Estructura de Componentes
+### 1. Fases del Juego
 
-- **`App.svelte`**: Componente raíz.
-- **`Game.svelte`**: Orquesta el estado del juego, la UI y los controles de reseteo.
-- **`Board.svelte`**: Gestiona el motor `Matter.js` y la lógica de detección en la cesta.
-- **`Cube.svelte`**: Representa un cubo numerado y arrastrable, con estilo dinámico.
-- **`Basket.svelte`**: Representa el contorno visual de la cesta.
-- **`Victory.svelte`**: Modal de victoria que aparece al completar el objetivo.
+El juego se divide en dos fases principales:
 
-### 2. Lógica y Estado (Stores)
+- **Fase de Selección**: El jugador decide la composición de sus números para la ronda.
+- **Fase de Juego**: El jugador intenta resolver el puzle aritmético en el tablero de físicas.
 
-- **`numbers`**: Almacena los cubos activos, incluyendo su estado (si es resultado de una suma).
-- **`target`**: Almacena el número objetivo de la ronda.
-- **`generateNewRound`**: Función para generar un nuevo puzle.
+### 2. Mecánica de Juego (Reglas de "Cifras y Letras")
 
-### 3. Mecánica de Juego y Físicas
+#### 🎯 Objetivo
+- **Generación**: Al inicio de cada ronda, se genera un número objetivo aleatorio de tres cifras (100-999).
+- **Meta**: El jugador debe alcanzar esa cifra exacta.
 
-- **Motor de Físicas**: Basado en `Matter.js` para una simulación realista.
-- **Interacción de Arrastre**: Los jugadores pueden arrastrar y soltar cubos libremente.
+#### 🧮 Material (Números)
+- **Números Disponibles**:
+  - **Pequeños**: Números enteros del 1 al 10.
+  - **Grandes**: 25, 50, 75, 100.
+- **Selección del Jugador**:
+  - En la "Fase de Selección", el jugador elige cuántos números grandes quiere (de 0 a 4).
+  - El sistema completa los seis números restantes con números pequeños elegidos al azar.
+  - *Ejemplo*: Si el jugador elige 2 grandes, recibirá 2 números del grupo {25, 50, 75, 100} y 4 números del grupo {1-10}.
 
-- **Mecánica de Cesta Física (¡Pulida!)**:
-    - **Suma por Reposo**: La suma se ejecuta automáticamente cuando dos o más cubos están en reposo dentro de la cesta.
-    - **Sincronización Física-UI (¡Implementado!)**: Al realizarse una suma, los cuerpos físicos de los cubos originales se eliminan explícitamente del motor de físicas, asegurando que desaparecen correctamente. El nuevo cubo resultante se crea con su propio cuerpo físico, siendo totalmente interactivo.
-    - **Estilo para Cubos de Suma (¡Implementado!)**: Los cubos generados a partir de una suma tienen un color verde distintivo para diferenciarlos visualmente de los cubos originales.
+#### ⚙️ Reglas de Cálculo
+- **Uso Único**: Cada cubo (número) solo puede usarse una vez.
+- **Operaciones Básicas**: Las cuatro cestas del tablero se corresponden con:
+  - `+` Suma
+  - `-` Resta
+  - `×` Multiplicación
+  - `÷` División
+- **Validación de Operaciones**:
+  - **Resta**: El resultado no puede ser negativo (`a - b` donde `a > b`).
+  - **División**: El resultado debe ser un número entero (`a % b === 0`).
+- **Encadenamiento**: El resultado de una operación se convierte en un nuevo cubo en el tablero. Este nuevo cubo puede ser utilizado para operaciones posteriores.
+- **Consumo**: Los dos cubos utilizados en una operación desaparecen y son reemplazados por el cubo del resultado.
 
-- **Controles de Juego**:
-    - **Deshacer Suma**: Un botón que permite revertir la última operación de suma, restaurando los cubos anteriores.
-    - **Reset Total**: Un botón que permite reiniciar la ronda por completo, generando un nuevo número objetivo y una nueva configuración de cubos.
+### 3. Flujo de Juego Detallado
 
-- **Condición de Victoria y Bucle de Juego**:
-    - **Detección de Victoria**: El juego detecta si un cubo (original o de suma) coincide con el número objetivo.
-    - **Pantalla de Victoria y Reinicio**: El bucle de juego con el modal de victoria y el botón de reinicio sigue siendo funcional.
+1.  **Inicio (Fase de Selección)**:
+    - Se presenta al jugador una interfaz para elegir de 0 a 4 números grandes.
+    - Una vez hecha la selección, el jugador pulsa "Empezar Juego".
+2.  **Comienza la Ronda (Fase de Juego)**:
+    - El tablero se puebla con los 6 cubos numerados según la selección del jugador.
+    - Se muestra el número objetivo de 3 cifras.
+    - Tras un breve retraso, aparecen las cuatro cestas de operaciones (+, -, ×, ÷) en el centro del tablero.
+3.  **Resolución del Puzle**:
+    - El jugador arrastra dos cubos y los suelta sobre una de las cestas.
+    - El sistema valida la operación. Si no es válida (ej. `5 / 2` o `3 - 10`), los cubos vuelven a su sitio.
+    - Si la operación es válida, los dos cubos se eliminan y se crea un nuevo cubo con el resultado. Este nuevo cubo es interactivo y puede ser usado en futuras operaciones.
+4.  **Condición de Victoria**:
+    - Si en algún momento un cubo resultante es igual al número objetivo, el juego se detiene y se muestra un mensaje de victoria.
+5.  **Controles**:
+    - **Reset Total**: Un botón permite al jugador abandonar la ronda actual y volver a la "Fase de Selección" para empezar de nuevo.
 
-### 4. Flujo de Juego Actual
+### 4. Estructura de Componentes Propuesta
 
-1.  El usuario ve un número objetivo y varios cubos amarillos que caen en el tablero.
-2.  Arrastra y suelta los cubos en la cesta física de la parte inferior.
-3.  Cuando dos cubos se detienen, desaparecen y se fusionan en un nuevo **cubo verde** con la suma de sus valores. Este nuevo cubo es completamente interactivo.
-4.  El jugador puede usar el botón **"Deshacer Suma"** si comete un error, lo que hará que los cubos originales reaparezcan.
-5.  El botón **"Reset Total"** está disponible para empezar una nueva ronda en cualquier momento.
-6.  El juego continúa hasta que un cubo coincide con el número objetivo.
-7.  **¡Victoria!** Se muestra la pantalla de celebración.
+- **`App.svelte`**: Raíz, gestiona qué fase mostrar (Selección o Juego).
+- **`NumberSelection.svelte` (Nuevo)**: Componente para la fase de selección de números.
+- **`Game.svelte`**: Orquestador principal de la fase de juego.
+- **`Board.svelte`**: Motor de físicas, ahora con lógica para detectar colisiones en 4 zonas distintas y reportar los cubos implicados y la operación.
+- **`Cube.svelte`**: Representación de un número.
+- **`Basket.svelte`**: Visualización de las zonas de operación.
 
 ---
 
-## Estado del Proyecto: ¡Juego Pulido y Funcional!
+## Próximos Pasos
 
-Se han corregido los problemas de sincronización entre la UI de Svelte y el motor de físicas Matter.js. La mecánica de suma ahora es visualmente coherente y funcionalmente robusta. La adición de un estilo distintivo para los cubos resultantes mejora significativamente la claridad del juego.
+1.  **Crear el componente `NumberSelection.svelte`**.
+2.  **Modificar `App.svelte`** para gestionar el cambio entre `NumberSelection` y `Game`.
+3.  **Actualizar `stores.ts`** con la nueva lógica de generación de números.
+4.  **Implementar la lógica de detección de operaciones y validación** en `Board.svelte` y `Game.svelte`.

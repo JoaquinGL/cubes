@@ -1,57 +1,98 @@
 
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 
-interface CubeNumber {
+export interface CubeNumber {
   id: number;
   value: number;
-  // Añadimos posición opcional para la creación
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
 }
-
-// --- Stores ---
-export const numbers = writable<CubeNumber[]>([]);
-export const target = writable<number>(0);
-
-// --- Actions ---
 
 let idCounter = 0;
 
-/**
- * Genera una nueva ronda de juego con números aleatorios y un objetivo.
- */
-export function generateNewRound() {
-  const newNumbers: CubeNumber[] = [];
-  const numberOfCubes = 5;
+// --- Stores ---
+export const numbers = writable<CubeNumber[]>([]);
+export const target = writable<number | null>(null);
 
-  for (let i = 0; i < numberOfCubes; i++) {
-    const randomValue = Math.floor(Math.random() * 20) + 1;
-    newNumbers.push({ id: idCounter++, value: randomValue });
+// --- Constantes del Juego ---
+const LARGE_NUMBERS = [25, 50, 75, 100];
+const SMALL_NUMBERS = Array.from({ length: 10 }, (_, i) => i + 1);
+
+// --- Funciones de Lógica del Juego ---
+
+/**
+ * Genera un número aleatorio para el objetivo.
+ */
+function generateTarget(): number {
+  return Math.floor(Math.random() * 900) + 100;
+}
+
+/**
+ * Baraja un array.
+ */
+function shuffle<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
+  return array;
+}
+
+/**
+ * Crea la ronda de juego según las reglas de "Cifras y Letras".
+ * @param largeNumbersCount - El número de números grandes a usar (0-4).
+ */
+export function generateNewRound(largeNumbersCount: number) {
+  idCounter = 0;
+  target.set(generateTarget());
+
+  const selectedLarge = shuffle([...LARGE_NUMBERS]).slice(0, largeNumbersCount);
+  const smallNumbersNeeded = 6 - largeNumbersCount;
   
-  const newTarget = Math.floor(Math.random() * 81) + 20; // Target entre 20 y 100
+  const selectedSmall: number[] = [];
+  for (let i = 0; i < smallNumbersNeeded; i++) {
+    // Permitimos que los números pequeños se repitan, como en el juego real
+    selectedSmall.push(SMALL_NUMBERS[Math.floor(Math.random() * SMALL_NUMBERS.length)]);
+  }
+
+  const initialNumbers = [...selectedLarge, ...selectedSmall];
+
+  // Damos a cada número una posición inicial aleatoria en la parte superior del tablero
+  const newNumbers = initialNumbers.map((value, i) => ({
+    id: idCounter++,
+    value,
+    // Posición X aleatoria, Y en la parte superior para que caigan
+    x: 200 + i * 100 + Math.random() * 40 - 20, 
+    y: 50 + Math.random() * 50 - 25,
+  }));
 
   numbers.set(newNumbers);
-  target.set(newTarget);
 }
 
 /**
- * Añade un nuevo número (cubo) a la lista.
- * @param value El número a añadir.
- * @param x Posición x inicial opcional.
- * @param y Posición y inicial opcional.
+ * Elimina un conjunto de cubos del juego por su ID.
+ * @param ids - Un array de IDs de los cubos a eliminar.
  */
-export function addNumber(value: number, x?: number, y?: number) {
-    numbers.update(currentNumbers => [
-        ...currentNumbers,
-        { id: idCounter++, value: value, x, y }
-    ]);
+export function removeNumbers(ids: number[]) {
+    numbers.update(currentNumbers => 
+        currentNumbers.filter(num => !ids.includes(num.id))
+    );
 }
 
 /**
- * Elimina un número (cubo) de la lista por su ID.
- * @param id El ID del número a eliminar.
+ * Añade un nuevo cubo al juego, típicamente como resultado de una operación.
+ * @param value - El valor del nuevo cubo.
+ * @param x - Posición X de aparición.
+ * @param y - Posición Y de aparición.
  */
-export function removeNumber(id: number) {
-    numbers.update(currentNumbers => currentNumbers.filter(n => n.id !== id));
+export function addNumber(value: number, x: number, y: number) {
+    numbers.update(currentNumbers => {
+        const newNumber: CubeNumber = {
+            id: idCounter++,
+            value,
+            x,
+            y
+        };
+        return [...currentNumbers, newNumber];
+    });
 }

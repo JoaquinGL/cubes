@@ -1,76 +1,74 @@
 
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { fly, scale } from 'svelte/transition';
+    import { createEventDispatcher } from 'svelte';
+    import { fly } from 'svelte/transition';
 
-  const dispatch = createEventDispatcher();
-
-  function playAgain() {
-    dispatch('playagain');
-  }
+    const dispatch = createEventDispatcher();
 </script>
 
-<div class="overlay" in:fly={{ y: -200, duration: 500, delay: 200 }}>
-  <div class="victory-modal" in:scale={{ duration: 400, delay: 500, start: 0.5 }}>
-    <h2>¡Victoria!</h2>
-    <p>¡Has alcanzado el número objetivo!</p>
-    <button on:click={playAgain}>Jugar de Nuevo</button>
-  </div>
+<div class="modal-backdrop">
+    <div class="modal-content" in:fly={{ y: -50, duration: 500 }}>
+        <h2 class="title">¡Objetivo Conseguido!</h2>
+        <p class="subtitle">¡Tu mente es una calculadora!</p>
+        <button class="play-again-btn" on:click={() => dispatch('playAgain')}>
+            Jugar de Nuevo
+        </button>
+    </div>
 </div>
 
 <style>
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
+    .modal-backdrop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
 
-  .victory-modal {
-    background-color: #fdf6e3;
-    padding: 2.5rem 3rem;
-    border-radius: 25px;
-    border: 10px solid #d2b48c;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    color: #5d4037;
-  }
+    .modal-content {
+        font-family: 'Patrick Hand', cursive;
+        background-color: #fff9f0;
+        padding: 3rem 5rem;
+        border-radius: 25px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border: 5px solid #a0522d;
+    }
 
-  h2 {
-    font-family: 'Patrick Hand', cursive;
-    font-size: 3.5rem;
-    color: #d2691e;
-    margin: 0 0 1rem 0;
-    text-shadow: 2px 2px 3px rgba(0,0,0,0.1);
-  }
+    .title {
+        font-size: 3rem;
+        color: #d2691e;
+        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
 
-  p {
-    font-size: 1.5rem;
-    margin: 0 0 2rem 0;
-  }
+    .subtitle {
+        font-size: 1.5rem;
+        color: #5d4037;
+        margin: 0.5rem 0 2.5rem 0;
+    }
 
-  button {
-    font-family: 'Patrick Hand', cursive;
-    font-size: 1.5rem;
-    padding: 0.8rem 2rem;
-    border-radius: 15px;
-    border: 3px solid #8b4513;
-    background-color: #d2691e;
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  }
+    .play-again-btn {
+        font-family: 'Patrick Hand', cursive;
+        font-size: 1.5rem;
+        padding: 0.7em 1.8em;
+        background-color: #a0522d;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
 
-  button:hover {
-    transform: translateY(-3px);
-    background-color: #a0522d;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-  }
+    .play-again-btn:hover {
+        background-color: #5d4037;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+    }
 </style>
