@@ -23,7 +23,6 @@
   let basketTimer: number;
   let showVictory = false;
 
-  // Suscripción para detectar la victoria
   const unsubscribe = numbers.subscribe(currentNumbers => {
     if (get(target) && currentNumbers.some(n => n.value === get(target))) {
       showVictory = true;
@@ -42,18 +41,13 @@
     }, 2500);
   }
 
-  onMount(() => {
-    initializeRound();
-  });
-
+  onMount(() => { initializeRound(); });
   onDestroy(() => {
     clearTimeout(basketTimer);
-    unsubscribe(); // Limpiar la suscripción
+    unsubscribe();
   });
 
-  function goBackToSelection() {
-    dispatch('end');
-  }
+  function goBackToSelection() { dispatch('end'); }
 
   function handleBoardReady(event: CustomEvent<{ world: Matter.World, zones: Zone[] }>) {
     world = event.detail.world;
@@ -75,40 +69,27 @@
     const valB = numB.value;
 
     switch (operation) {
-        case 'suma':
-            result = valA + valB;
-            break;
-        case 'resta':
-            if (valA !== valB) { // La resta de un número por sí mismo es 0, inválido
-                result = Math.max(valA, valB) - Math.min(valA, valB);
-            }
-            break;
-        case 'multiplicar':
-            result = valA * valB;
-            break;
-        case 'dividir':
-            const max = Math.max(valA, valB);
-            const min = Math.min(valA, valB);
-            if (min !== 0 && max % min === 0) {
-                result = max / min;
-            }
-            break;
+      case 'suma': result = valA + valB; break;
+      case 'resta': result = Math.max(valA, valB) - Math.min(valA, valB); break;
+      case 'multiplicar': result = valA * valB; break;
+      case 'dividir':
+        const max = Math.max(valA, valB);
+        const min = Math.min(valA, valB);
+        if (min !== 0 && max % min === 0) result = max / min;
+        break;
     }
 
-    if (result !== null) {
-        // La operación es válida, proceder
-        const avgX = (bodyA.position.x + bodyB.position.x) / 2;
-        const avgY = (bodyB.position.y + bodyB.position.y) / 2;
+    if (result !== null && result > 0) {
+      // Posición de caída: Centro del tablero
+      // @ts-ignore
+      const boardWidth = boardComponent.container.clientWidth;
+      const dropX = boardWidth / 2;
+      const dropY = 50; // Parte superior
 
-        // 1. Eliminar cuerpos del motor de físicas
-        boardComponent.removeBody(bodyA);
-        boardComponent.removeBody(bodyB);
-
-        // 2. Eliminar números del store
-        removeNumbers([numA.id, numB.id]);
-
-        // 3. Añadir el nuevo número
-        addNumber(result, avgX, avgY);
+      boardComponent.removeBody(bodyA);
+      boardComponent.removeBody(bodyB);
+      removeNumbers([numA.id, numB.id]);
+      addNumber(result, dropX, dropY);
     }
   }
 
@@ -132,11 +113,9 @@
             <Basket {...zone} />
           {/each}
         {/if}
-
         {#each $numbers as num (num.id)}
           <Cube id={num.id} number={num.value} world={world} x={num.x} y={num.y} />
         {/each}
-
       {/if}
     </Board>
   {/if}
@@ -147,6 +126,7 @@
 </main>
 
 <style>
+  /* Tus estilos existentes aquí */
   .game-container {
     display: flex;
     flex-direction: column;
@@ -159,22 +139,18 @@
     box-sizing: border-box;
     position: relative;
   }
-
   header {
       text-align: center;
       margin-bottom: 1rem;
   }
-
   header h1 { font-size: 2.5rem; color: #5d4037; margin: 0; }
   .target-display { font-size: 1.8rem; color: #8b4513; margin-top: 0.5rem; }
   .target-display span { font-weight: bold; color: #d2691e; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-
   .controls {
     margin-top: 1.5rem;
     display: flex;
     gap: 1rem;
   }
-
   button {
     font-family: 'Patrick Hand', cursive;
     font-size: 1.2rem;
@@ -187,7 +163,6 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-
   button:hover {
     background-color: #a0522d;
     transform: translateY(-2px);

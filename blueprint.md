@@ -3,7 +3,7 @@
 
 ## Visión General
 
-`Cubos & Cestas` es una adaptación interactiva del clásico juego de cálculo "Cifras y Letras". El objetivo es utilizar seis números generados aleatoriamente para alcanzar, o aproximarse lo máximo posible, a una cifra objetivo de tres dígitos mediante operaciones aritméticas básicas. La aplicación utiliza un motor de físicas (`Matter.js`) para una interacción táctil y atractiva, donde los números son "cubos" que se arrastran a "cestas" de operaciones.
+`Cubos & Cestas` es una adaptación interactiva del clásico juego de cálculo "Cifras y Letras". El objetivo es utilizar seis números generados aleatoriamente para alcanzar una cifra objetivo de tres dígitos mediante operaciones aritméticas básicas. La aplicación utiliza un motor de físicas (`Matter.js`) para una interacción táctil y atractiva, donde los números son "cubos" que se arrastran a "cestas" de operaciones.
 
 El proyecto está construido con **Svelte** y **TypeScript**, buscando una experiencia de usuario fluida, reactiva y educativa.
 
@@ -13,71 +13,56 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 
 ### 1. Fases del Juego
 
-El juego se divide en dos fases principales:
-
 - **Fase de Selección**: El jugador decide la composición de sus números para la ronda.
 - **Fase de Juego**: El jugador intenta resolver el puzle aritmético en el tablero de físicas.
 
 ### 2. Mecánica de Juego (Reglas de "Cifras y Letras")
 
 #### 🎯 Objetivo
-- **Generación**: Al inicio de cada ronda, se genera un número objetivo aleatorio de tres cifras (100-999).
+- **Generación**: Se genera un número objetivo aleatorio (100-999).
 - **Meta**: El jugador debe alcanzar esa cifra exacta.
 
 #### 🧮 Material (Números)
-- **Números Disponibles**:
-  - **Pequeños**: Números enteros del 1 al 10.
-  - **Grandes**: 25, 50, 75, 100.
-- **Selección del Jugador**:
-  - En la "Fase de Selección", el jugador elige cuántos números grandes quiere (de 0 a 4).
-  - El sistema completa los seis números restantes con números pequeños elegidos al azar.
-  - *Ejemplo*: Si el jugador elige 2 grandes, recibirá 2 números del grupo {25, 50, 75, 100} y 4 números del grupo {1-10}.
+- **Pequeños**: {1-10}, **Grandes**: {25, 50, 75, 100}.
+- **Selección del Jugador**: Elige de 0 a 4 grandes, y el resto se completa con pequeños hasta tener 6 números.
 
 #### ⚙️ Reglas de Cálculo
-- **Uso Único**: Cada cubo (número) solo puede usarse una vez.
-- **Operaciones Básicas**: Las cuatro cestas del tablero se corresponden con:
-  - `+` Suma
-  - `-` Resta
-  - `×` Multiplicación
-  - `÷` División
+- **Uso Único**: Cada cubo solo puede usarse una vez.
+- **Diseño de Cestas (¡Nuevo!)**:
+  - **Izquierda**: Cesta de Suma `(+)` arriba, Cesta de Resta `(-)` abajo.
+  - **Derecha**: Cesta de Multiplicación `(×)` arriba, Cesta de División `(÷)` abajo.
 - **Validación de Operaciones**:
-  - **Resta**: El resultado no puede ser negativo (`a - b` donde `a > b`).
-  - **División**: El resultado debe ser un número entero (`a % b === 0`).
-- **Encadenamiento**: El resultado de una operación se convierte en un nuevo cubo en el tablero. Este nuevo cubo puede ser utilizado para operaciones posteriores.
-- **Consumo**: Los dos cubos utilizados en una operación desaparecen y son reemplazados por el cubo del resultado.
+  - **Resta**: Siempre se calcula `mayor - menor` para evitar negativos.
+  - **División**: Solo se permite si el resultado es un entero (`mayor % menor === 0`).
+- **Mecánica de Resultado (¡Nuevo!)**:
+  - Al soltar dos cubos en una cesta, estos desaparecen.
+  - Un **nuevo cubo** con el resultado de la operación aparece en la parte superior central del tablero y cae, volviéndose parte del juego.
 
 ### 3. Flujo de Juego Detallado
 
-1.  **Inicio (Fase de Selección)**:
-    - Se presenta al jugador una interfaz para elegir de 0 a 4 números grandes.
-    - Una vez hecha la selección, el jugador pulsa "Empezar Juego".
-2.  **Comienza la Ronda (Fase de Juego)**:
-    - El tablero se puebla con los 6 cubos numerados según la selección del jugador.
-    - Se muestra el número objetivo de 3 cifras.
-    - Tras un breve retraso, aparecen las cuatro cestas de operaciones (+, -, ×, ÷) en el centro del tablero.
-3.  **Resolución del Puzle**:
-    - El jugador arrastra dos cubos y los suelta sobre una de las cestas.
-    - El sistema valida la operación. Si no es válida (ej. `5 / 2` o `3 - 10`), los cubos vuelven a su sitio.
-    - Si la operación es válida, los dos cubos se eliminan y se crea un nuevo cubo con el resultado. Este nuevo cubo es interactivo y puede ser usado en futuras operaciones.
-4.  **Condición de Victoria**:
-    - Si en algún momento un cubo resultante es igual al número objetivo, el juego se detiene y se muestra un mensaje de victoria.
-5.  **Controles**:
-    - **Reset Total**: Un botón permite al jugador abandonar la ronda actual y volver a la "Fase de Selección" para empezar de nuevo.
+1.  **Fase de Selección**: El jugador elige la cantidad de números grandes.
+2.  **Comienza la Ronda**: El tablero se puebla con los 6 cubos iniciales que caen aleatoriamente. Se muestra el número objetivo.
+3.  **Aparición de Cestas**: Tras unos segundos, las 4 cestas aparecen en sus posiciones fijas (dos a cada lado, apiladas).
+4.  **Resolución del Puzle**:
+    - El jugador arrastra dos cubos y los suelta en una de las cestas.
+    - El sistema valida la operación según las reglas.
+    - Si es válida, los dos cubos usados desaparecen. Inmediatamente, un nuevo cubo con el resultado cae desde el centro superior del tablero.
+    - Si no es válida, los cubos no se ven afectados.
+5.  **Victoria**: Si un cubo coincide con el número objetivo, se muestra la pantalla de victoria.
+6.  **Controles**: Un botón de "Nueva Selección" permite reiniciar y volver al paso 1.
 
-### 4. Estructura de Componentes Propuesta
+### 4. Estructura de Componentes
 
-- **`App.svelte`**: Raíz, gestiona qué fase mostrar (Selección o Juego).
-- **`NumberSelection.svelte` (Nuevo)**: Componente para la fase de selección de números.
-- **`Game.svelte`**: Orquestador principal de la fase de juego.
-- **`Board.svelte`**: Motor de físicas, ahora con lógica para detectar colisiones en 4 zonas distintas y reportar los cubos implicados y la operación.
-- **`Cube.svelte`**: Representación de un número.
-- **`Basket.svelte`**: Visualización de las zonas de operación.
+- **`App.svelte`**: Gestiona el cambio entre `NumberSelection` y `Game`.
+- **`NumberSelection.svelte`**: UI para elegir los números.
+- **`Game.svelte`**: Orquestador principal del juego. **Gestionará la creación del nuevo cubo en el centro del tablero.**
+- **`Board.svelte`**: Motor de físicas. **Tendrá la nueva lógica para posicionar las 4 cestas en los laterales.**
+- **`Cube.svelte`**: Componente del cubo.
+- **`Basket.svelte`**: Visualización de las cestas.
 
 ---
 
-## Próximos Pasos
+## Plan Actual
 
-1.  **Crear el componente `NumberSelection.svelte`**.
-2.  **Modificar `App.svelte`** para gestionar el cambio entre `NumberSelection` y `Game`.
-3.  **Actualizar `stores.ts`** con la nueva lógica de generación de números.
-4.  **Implementar la lógica de detección de operaciones y validación** en `Board.svelte` y `Game.svelte`.
+1.  **Rediseñar `Board.svelte`** para implementar la nueva disposición de las cestas.
+2.  **Ajustar `Game.svelte`** para que los nuevos cubos resultantes caigan desde el centro.
