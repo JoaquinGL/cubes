@@ -33,9 +33,9 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
   - **Otras cestas (Resta, Multiplicación, División) están temporalmente desactivadas**.
 - **Validación de Operaciones**:
   - Por ahora, solo se implementará la suma.
-- **Mecánica de Resultado**:
+- **Mecánica de Resultado (¡MEJORADA!)**:
   - Al soltar dos cubos en la cesta de suma, estos desaparecen.
-  - Un **nuevo cubo** con el resultado de la suma aparece en la parte superior central del tablero y cae.
+  - Un **nuevo cubo** con el resultado de la suma aparece **directamente en el centro de la cesta de suma**, eliminando cambios bruscos.
 
 ### 3. Flujo de Juego Detallado
 
@@ -44,7 +44,7 @@ El proyecto está construido con **Svelte** y **TypeScript**, buscando una exper
 3.  **Aparición de Cestas**: Tras unos segundos, la cesta de suma aparece en su posición a la izquierda.
 4.  **Resolución del Puzle (Suma)**:
     - El jugador arrastra dos cubos a la cesta de suma.
-    - Los dos cubos desaparecen y un nuevo cubo con el resultado cae desde el centro.
+    - Los dos cubos desaparecen y un nuevo cubo con el resultado aparece en la cesta.
 5.  **Victoria**: Si un cubo coincide con el número objetivo, se muestra la pantalla de victoria.
 6.  **Controles**: Un botón de "Nueva Selección" permite reiniciar.
 

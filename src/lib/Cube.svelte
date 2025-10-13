@@ -13,8 +13,9 @@
   let element: HTMLElement;
   let body: Matter.Body;
 
+  // La posición inicial viene de las props, que ahora serán las de la cesta.
   const initialX = x !== undefined ? x : Math.random() * 400 + 50;
-  const initialY = y !== undefined ? y : 50; // Posición inicial de caída
+  const initialY = y !== undefined ? y : 50;
 
   onMount(() => {
     const { Bodies } = Matter;
@@ -29,7 +30,6 @@
 
     Matter.World.add(world, body);
 
-    // ESTA ES LA LÓGICA DE SINCRONIZACIÓN RESTAURADA
     let renderLoop: number;
     function update() {
       if (body && element) {
@@ -39,7 +39,6 @@
     }
     update();
 
-    // Limpieza del bucle al destruir el componente
     return () => {
         cancelAnimationFrame(renderLoop);
     }
@@ -52,7 +51,6 @@
   });
 </script>
 
-<!-- Eliminamos el style="top, left" que causaba el conflicto -->
 <div 
   class="cube"
   bind:this={element}

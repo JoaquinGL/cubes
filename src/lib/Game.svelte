@@ -52,8 +52,8 @@
     zones = event.detail.zones;
   }
   
-  function handleOperation(event: CustomEvent<{ bodyA: Matter.Body, bodyB: Matter.Body, operation: string, boardWidth: number }>) {
-    const { bodyA, bodyB, operation, boardWidth } = event.detail;
+  function handleOperation(event: CustomEvent<{ bodyA: Matter.Body, bodyB: Matter.Body, operation: string }>) {
+    const { bodyA, bodyB, operation } = event.detail;
     if (operation !== 'suma') return;
 
     const idA = parseInt(bodyA.label.split('-')[1]);
@@ -66,11 +66,12 @@
 
     const result = numA.value + numB.value;
     
-    if (boardWidth === 0) return;
+    const sumaZone = zones.find(z => z.label === 'suma');
+    if (!sumaZone) return; // No se puede crear el cubo si la zona no existe
 
-    const dropX = boardWidth / 2;
-    // REVERTIDO: Volvemos a la posición de caída original y estable.
-    const dropY = 50;
+    // TU SOLUCIÓN: Usar las coordenadas de la cesta de suma para el nuevo cubo.
+    const dropX = sumaZone.x;
+    const dropY = sumaZone.y;
 
     removeNumbers([numA.id, numB.id]);
     addNumber(result, dropX, dropY);
