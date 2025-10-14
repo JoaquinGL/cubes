@@ -58,13 +58,31 @@ export function generateNewRound(largeNumbersCount: number) {
 
   const startingValues = [...selectedLarge, ...selectedSmall];
 
+  // Calcular el ancho disponible basado en el tamaño de la pantalla
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isSmallMobile = typeof window !== 'undefined' && window.innerWidth < 480;
+  
+  // Ajustar posiciones según el tamaño de pantalla
+  // Considerando padding del contenedor: 0.5rem (móvil pequeño), 1rem (tablet), 2rem (desktop)
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
+  const containerPadding = isSmallMobile ? 8 : isMobile ? 16 : 32; // En píxeles
+  const boardWidth = isMobile 
+    ? Math.min(viewportWidth - containerPadding * 2, 1000)
+    : 1000;
+  
+  const cubeSize = isSmallMobile ? 50 : isMobile ? 60 : 70;
+  const margin = cubeSize / 2 + 30; // Margen seguro desde los bordes
+  const startX = margin;
+  const endX = boardWidth - margin;
+  const spacing = (endX - startX) / Math.max(startingValues.length - 1, 1);
+
   // Damos a cada número una posición inicial aleatoria en la parte superior del tablero
   const newNumbers = startingValues.map((value, i) => ({
     id: idCounter++,
     value,
-    // Posición X aleatoria, Y en la parte superior para que caigan
-    x: 200 + i * 100 + Math.random() * 40 - 20, 
-    y: 50 + Math.random() * 50 - 25,
+    // Posición X distribuida uniformemente con algo de aleatoriedad
+    x: Math.min(Math.max(startX + i * spacing + Math.random() * 20 - 10, margin), boardWidth - margin), 
+    y: 50 + Math.random() * 20 - 10,
   }));
 
   // Store the initial state and set the current numbers

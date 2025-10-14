@@ -170,12 +170,24 @@
     box-sizing: border-box;
     position: relative;
   }
+
+  @media (max-width: 768px) {
+    .game-container {
+        padding-top: 0.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .game-container {
+        padding-top: 0.3rem;
+    }
+  }
   header {
       text-align: center;
       margin-bottom: 1rem;
       padding: 0 1rem;
   }
-  header h1 { font-size: 2.5rem; color: #5d4037; margin: 0; }
+  header h1 { font-size: 2.5rem; color: #5d4037; margin: 0; line-height: 1.2; }
   .target-display { font-size: 1.8rem; color: #8b4513; margin-top: 0.5rem; }
   .target-display span { font-weight: bold; color: #d2691e; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
   .controls {
@@ -207,23 +219,53 @@
   }
 
   @media (max-width: 768px) {
+    header {
+        margin-bottom: 0.8rem;
+        padding: 0 0.5rem;
+    }
     header h1 {
         font-size: 2rem;
+        margin: 0.5rem 0;
     }
     .target-display {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+        margin-top: 0.3rem;
     }
     .controls {
         flex-direction: column;
         align-items: center;
         gap: 0.8rem;
         margin-top: 1rem;
+        margin-bottom: 0.5rem;
     }
     .controls button {
         width: 100%;
         max-width: 400px;
         font-size: 1.1rem;
         padding: 0.8em 1.2em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    header {
+        margin-bottom: 0.6rem;
+    }
+    header h1 {
+        font-size: 1.8rem;
+        margin: 0.4rem 0;
+    }
+    .target-display {
+        font-size: 1.4rem;
+        margin-top: 0.25rem;
+    }
+    .controls {
+        margin-top: 0.8rem;
+        margin-bottom: 0.4rem;
+        gap: 0.6rem;
+    }
+    .controls button {
+        font-size: 1rem;
+        padding: 0.6em 1em;
     }
   }
 </style>

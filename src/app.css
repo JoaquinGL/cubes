@@ -39,6 +39,23 @@ body {
   width: 100%;
 }
 
+@media (max-width: 768px) {
+  #app {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #app {
+    padding: 0.5rem;
+    padding-left: 0;
+  }
+
+  body {
+    min-width: 280px;
+  }
+}
+
 h1, h2, h3 {
   font-family: 'Patrick Hand', cursive;
   color: var(--text-color);
