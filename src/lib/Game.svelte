@@ -7,6 +7,7 @@
   import Cube from './Cube.svelte';
   import Basket from './Basket.svelte';
   import Victory from './Victory.svelte';
+  import Summary from './Summary.svelte'; // Import the new component
   import type Matter from 'matter-js';
 
   export let largeNumbers: number;
@@ -21,6 +22,8 @@
   let basketsVisible = false;
   let basketTimer: number;
   let showVictory = false;
+  let showSummary = false; // Control the summary screen
+  let closestNumber = 0;   // Store the closest number found
 
   const unsubscribe = numbers.subscribe(currentNumbers => {
     if (get(target) && currentNumbers.some(n => n.value === get(target))) {
@@ -30,6 +33,7 @@
 
   function initializeRound() {
     showVictory = false;
+    showSummary = false;
     basketsVisible = false;
     generateNewRound(largeNumbers);
     gameReady = true;
@@ -46,6 +50,21 @@
   });
 
   function goBackToSelection() { dispatch('end'); }
+
+  function handleFinish() {
+    const currentNumbers = get(numbers).map(n => n.value);
+    const currentTarget = get(target);
+
+    if (currentTarget === null) return;
+
+    closestNumber = currentNumbers.reduce((prev, curr) => {
+      const diffPrev = Math.abs(prev - currentTarget);
+      const diffCurr = Math.abs(curr - currentTarget);
+      return diffCurr < diffPrev ? curr : prev;
+    }, currentNumbers[0] || 0);
+
+    showSummary = true;
+  }
 
   function handleBoardReady(event: CustomEvent<{ world: Matter.World, zones: Zone[] }>) {
     world = event.detail.world;
@@ -103,6 +122,8 @@
 <main class="game-container">
   {#if showVictory}
     <Victory on:playAgain={goBackToSelection} />
+  {:else if showSummary}
+    <Summary target={$target} {closestNumber} on:playAgain={goBackToSelection} />
   {/if}
 
   <header>
@@ -127,6 +148,7 @@
 
   <div class="controls">
      <button on:click={resetRound}>Reiniciar</button>
+     <button on:click={handleFinish}>Finalizar</button>
     <button on:click={goBackToSelection}>Nueva Selección</button>
   </div>
 </main>
