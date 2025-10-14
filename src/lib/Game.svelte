@@ -2,7 +2,7 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { get } from 'svelte/store';
-  import { numbers, target, generateNewRound, removeNumbers, addNumber } from './stores';
+  import { numbers, target, generateNewRound, removeNumbers, addNumber, resetRound } from './stores';
   import Board from './Board.svelte';
   import Cube from './Cube.svelte';
   import Basket from './Basket.svelte';
@@ -126,6 +126,7 @@
   {/if}
 
   <div class="controls">
+     <button on:click={resetRound}>Reiniciar</button>
     <button on:click={goBackToSelection}>Nueva Selección</button>
   </div>
 </main>

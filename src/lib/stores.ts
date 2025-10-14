@@ -12,6 +12,7 @@ let idCounter = 0;
 
 // --- Stores ---
 export const numbers = writable<CubeNumber[]>([]);
+export const initialNumbers = writable<CubeNumber[]>([]); // To store the round's starting numbers
 export const target = writable<number | null>(null);
 
 // --- Constantes del Juego ---
@@ -55,10 +56,10 @@ export function generateNewRound(largeNumbersCount: number) {
     selectedSmall.push(SMALL_NUMBERS[Math.floor(Math.random() * SMALL_NUMBERS.length)]);
   }
 
-  const initialNumbers = [...selectedLarge, ...selectedSmall];
+  const startingValues = [...selectedLarge, ...selectedSmall];
 
   // Damos a cada número una posición inicial aleatoria en la parte superior del tablero
-  const newNumbers = initialNumbers.map((value, i) => ({
+  const newNumbers = startingValues.map((value, i) => ({
     id: idCounter++,
     value,
     // Posición X aleatoria, Y en la parte superior para que caigan
@@ -66,8 +67,21 @@ export function generateNewRound(largeNumbersCount: number) {
     y: 50 + Math.random() * 50 - 25,
   }));
 
+  // Store the initial state and set the current numbers
+  initialNumbers.set(JSON.parse(JSON.stringify(newNumbers))); // Deep copy
   numbers.set(newNumbers);
 }
+
+/**
+ * Resets the current round to its initial numbers.
+ */
+export function resetRound() {
+  const currentInitial = get(initialNumbers);
+  // We need to create a deep copy to avoid weird reactivity issues with Matter.js
+  // bodies being shared across renders.
+  numbers.set(JSON.parse(JSON.stringify(currentInitial)));
+}
+
 
 /**
  * Elimina un conjunto de cubos del juego por su ID.
