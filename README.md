@@ -1,47 +1,184 @@
-# Svelte + TS + Vite
+# 🎲 The Arithmetic Challenge
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+<div align="center">
 
-## Recommended IDE Setup
+![Svelte](https://img.shields.io/badge/Svelte-FF3E00?style=for-the-badge&logo=svelte&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Matter.js](https://img.shields.io/badge/Matter.js-4B4B4D?style=for-the-badge&logo=javascript&logoColor=white)
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+**An interactive numbers puzzle game with physics-based gameplay**
 
-## Need an official Svelte framework?
+[Demo](#) • [Features](#-features) • [Installation](#-installation) • [Usage](#-usage)
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+</div>
 
-## Technical considerations
+---
 
-**Why use this over SvelteKit?**
+## 📖 About
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+**The Arithmetic Challenge** is a fun and engaging numbers puzzle game inspired by the classic "Countdown" numbers game. Players must combine six random numbers using basic arithmetic operations to reach a target number. The twist? It features realistic physics simulation using Matter.js, making the gameplay tactile and interactive!
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+### 🎯 Game Rules
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+- You receive **6 random numbers** (with a choice of how many "large" numbers: 25, 50, 75, 100)
+- A **target number** between 100-999 is generated
+- Drag and drop two number cubes into operation baskets (➕ ➖ ✖️ ➗)
+- The result becomes a new cube you can use for further calculations
+- Try to reach the exact target or get as close as possible!
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+### 🌍 Multilingual Support
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+The game is fully localized in:
+- 🇪🇸 **Spanish** (Español)
+- 🇬🇧 **English**
 
-**Why include `.vscode/extensions.json`?**
+---
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+## ✨ Features
 
-**Why enable `allowJs` in the TS template?**
+- 🎮 **Physics-based gameplay** - Interactive drag-and-drop with realistic physics
+- 🧮 **Automatic solver** - See the ideal solution after finishing
+- 📱 **Fully responsive** - Optimized for desktop, tablet, and mobile
+- 🌐 **Bilingual** - Available in English and Spanish
+- 🎨 **Beautiful UI** - Handwritten-style font with warm, kindergarten-inspired colors
+- ⚡ **Fast & lightweight** - Built with Svelte and Vite
+- 🎯 **Smart basket placement** - Optimized layouts for different screen sizes
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+---
 
-**Why is HMR not preserving my local component state?**
+## 🚀 Technologies
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+- **[Svelte 5](https://svelte.dev/)** - Reactive frontend framework
+- **[TypeScript](https://www.typescriptlang.org/)** - Type safety and better DX
+- **[Vite](https://vitejs.dev/)** - Lightning-fast build tool
+- **[Matter.js](https://brm.io/matter-js/)** - 2D physics engine for realistic interactions
+- **CSS3** - Custom styling with responsive design
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+---
 
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+## 📦 Installation
+
+### Prerequisites
+
+- Node.js 18+ and npm
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/JoaquinGL/cubes.git
+
+# Navigate to the project directory
+cd cubes
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
 ```
+
+The app will be available at `http://localhost:5173`
+
+---
+
+## 🎮 Usage
+
+### Development
+
+```bash
+npm run dev          # Start dev server with hot reload
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run check        # Type-check the project
+```
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+The production-ready files will be in the `dist` folder.
+
+---
+
+## 🗂️ Project Structure
+
+```
+cubes/
+├── src/
+│   ├── lib/
+│   │   ├── Board.svelte          # Game board with physics
+│   │   ├── Basket.svelte         # Operation baskets
+│   │   ├── Cube.svelte           # Number cubes with physics
+│   │   ├── Game.svelte           # Main game logic
+│   │   ├── NumberSelection.svelte # Initial screen
+│   │   ├── HowToPlayModal.svelte # Instructions modal
+│   │   ├── Victory.svelte        # Victory screen
+│   │   ├── Summary.svelte        # Game summary
+│   │   ├── engine.ts             # Matter.js physics setup
+│   │   ├── solver.ts             # Algorithm to find solutions
+│   │   ├── stores.ts             # Svelte stores
+│   │   └── i18n.ts               # Internationalization
+│   ├── App.svelte                # Root component
+│   ├── main.ts                   # Entry point
+│   └── app.css                   # Global styles
+├── public/                        # Static assets
+├── index.html                     # HTML entry point
+└── package.json                   # Dependencies and scripts
+```
+
+---
+
+## 🎨 Design Philosophy
+
+The game features a warm, **kindergarten-inspired aesthetic** with:
+- **Handwritten font** (Patrick Hand) for a friendly, approachable feel
+- **Warm color palette** (creams, browns, oranges) reminiscent of wooden toys
+- **Smooth animations** and physics interactions
+- **Minimalist UI** focused on gameplay
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+### Development Guidelines
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Inspired by the classic "Countdown" numbers game
+- Physics simulation powered by [Matter.js](https://brm.io/matter-js/)
+- Font: [Patrick Hand](https://fonts.google.com/specimen/Patrick+Hand) by Patrick Wagesreiter
+- Built with ❤️ using [Svelte](https://svelte.dev/)
+
+---
+
+## 📧 Contact
+
+Created by [@JoaquinGL](https://github.com/JoaquinGL)
+
+⭐ Star this repo if you find it useful!
+
+---
+
+<div align="center">
+  Made with 🎲 and ☕
+</div>
