@@ -1,72 +1,52 @@
 
-# Blueprint: Cubos & Cestas - El Desafío Aritmético
+# Blueprint: El Desafío Aritmético
 
 ## Visión General
 
-`Cubos & Cestas` es una adaptación interactiva del clásico juego de cálculo "Cifras y Letras". El objetivo es utilizar seis números generados aleatoriamente para alcanzar una cifra objetivo de tres dígitos mediante operaciones aritméticas básicas. La aplicación utiliza un motor de físicas (`Matter.js`) para una interacción táctil y atractiva, donde los números son "cubos" que se arrastran a "cestas" de operaciones.
+"El Desafío Aritmético" es un juego web interactivo inspirado en el clásico concurso de "Cifras y Letras". El objetivo es utilizar seis números iniciales (elegidos por el usuario) y las operaciones aritméticas básicas (suma, resta, multiplicación y división) para alcanzar un número objetivo generado aleatoriamente.
 
-El proyecto está construido con **Svelte** y **TypeScript**, buscando una experiencia de usuario fluida, reactiva y educativa.
+El juego está construido con Svelte y TypeScript, utilizando Matter.js para crear una experiencia de "caja de arena" física donde los números, representados como cubos, pueden ser arrastrados y soltados en "cestas" de operaciones para realizar los cálculos.
 
----
+## Características Implementadas
 
-## Esquema del Proyecto y Características
+- **Selección de Números:** El jugador puede elegir cuántos "números grandes" (25, 50, 75, 100) desea incluir en su selección de seis números, desde 0 hasta 4.
+- **Generación de la Partida:**
+  - Se generan 6 números iniciales según la elección del jugador.
+  - Se genera un número objetivo aleatorio entre 101 y 999.
+- **Interfaz Física Interactiva:**
+  - Los números aparecen como cubos físicos en un tablero.
+  - El jugador puede arrastrar los cubos.
+  - Aparecen "cestas" para cada operación aritmética (suma, resta, multiplicación, división) donde el jugador puede soltar los cubos.
+- **Mecánica de Juego:**
+  - Al soltar dos números en una cesta, se realiza la operación correspondiente.
+  - Los dos números originales desaparecen y un nuevo cubo con el resultado aparece en el lugar de la operación.
+  - La división solo es válida si es exacta y con números enteros.
+  - La resta siempre da como resultado un número positivo (el mayor menos el menor).
+- **Condición de Victoria:** El juego se gana si el jugador consigue generar un número exactamente igual al objetivo.
+- **Pantalla de Victoria:** Aparece una pantalla de felicitación al alcanzar el objetivo.
+- **Controles de la Partida:**
+  - **Reiniciar:** Permite volver a empezar la ronda actual con los mismos números y objetivo.
+  - **Finalizar:** Termina la partida y muestra una pantalla de resumen.
+  - **Nueva Selección:** Vuelve a la pantalla inicial para elegir un nuevo conjunto de números.
+- **Pantalla de Resumen (Fin de Partida):**
+  - Muestra el número objetivo, el número más cercano que ha conseguido el jugador y a qué distancia se ha quedado.
+  - **Solucionador Ideal:** Muestra la secuencia de operaciones exacta para alcanzar el objetivo (o el resultado más cercano posible si el objetivo no era alcanzable), sirviendo como un "desafío a la máquina".
+- **Inicio Rápido (Random Total):** En la pantalla de selección, un botón "Random Total" permite iniciar el juego inmediatamente con una cantidad aleatoria de números grandes.
 
-### 1. Fases del Juego
+## Estilo y Diseño
 
-- **Fase de Selección**: El jugador decide la composición de sus números para la ronda.
-- **Fase de Juego**: El jugador intenta resolver el puzle aritmético en el tablero de físicas.
+- **Estética:** El juego tiene un diseño amigable y táctil, con una paleta de colores cálidos (marrones, naranjas, beiges) que recuerda a la madera y el papel.
+- **Tipografía:** Se utiliza la fuente "Patrick Hand" para dar un toque informal y manuscrito.
+- **Animaciones:** Se emplean transiciones suaves (`fly` de Svelte) para la aparición de las pantallas modales (Victoria y Resumen), mejorando la experiencia de usuario.
+- **Interactividad:** Los botones y elementos interactivos tienen efectos `hover` y `shadows` que les dan profundidad y responden a la acción del usuario.
 
-### 2. Mecánica de Juego (Reglas de "Cifras y Letras")
+## Plan para el Cambio Actual: Añadir "Random Total"
 
-#### 🎯 Objetivo
-- **Generación**: Se genera un número objetivo aleatorio (100-999).
-- **Meta**: El jugador debe alcanzar esa cifra exacta.
-
-#### 🧮 Material (Números)
-- **Pequeños**: {1-10}, **Grandes**: {25, 50, 75, 100}.
-- **Selección del Jugador**: Elige de 0 a 4 grandes, y el resto se completa con pequeños hasta tener 6 números.
-
-#### ⚙️ Reglas de Cálculo
-- **Uso Único**: Cada cubo solo puede usarse una vez.
-- **Diseño de Cestas (COMPLETADO)**:
-  - **Izquierda**: Cesta de Suma `(+)` y Cesta de Resta `(-)`.
-  - **Derecha**: Cesta de Multiplicación `(x)` y Cesta de División `(/)`.
-- **Validación de Operaciones**:
-  - **Suma**: `resultado = a + b`
-  - **Resta**: `resultado = mayor - menor` (para evitar negativos).
-  - **Multiplicación**: `resultado = a * b`
-  - **División**: `resultado = mayor / menor` (solo si la división es exacta, sin decimales).
-- **Mecánica de Resultado (Fluida)**:
-  - Al soltar dos cubos en una cesta, estos desaparecen.
-  - Un **nuevo cubo** con el resultado aparece **directamente en el centro de la cesta correspondiente**.
-
-### 3. Flujo de Juego Detallado
-
-1.  **Fase de Selección**: El jugador elige la cantidad de números grandes.
-2.  **Comienza la Ronda**: El tablero se puebla con los 6 cubos iniciales. Se muestra el número objetivo.
-3.  **Aparición de Cestas**: Tras unos segundos, las cuatro cestas de operaciones aparecen en el tablero.
-4.  **Resolución del Puzle**:
-    - El jugador arrastra dos cubos a cualquiera de las cuatro cestas.
-    - Si la operación es válida, los dos cubos desaparecen y un nuevo cubo con el resultado aparece en la cesta usada.
-5.  **Victoria**: Si un cubo coincide con el número objetivo, se muestra la pantalla de victoria.
-6.  **Controles**: Un botón de "Nueva Selección" permite reiniciar.
-
-### 4. Estructura de Componentes
-
-- **`App.svelte`**: Gestiona el cambio entre `NumberSelection` y `Game`.
-- **`NumberSelection.svelte`**: UI para elegir los números.
-- **`Game.svelte`**: Orquestador principal del juego.
-- **`Board.svelte`**: Motor de físicas. Gestiona las cuatro zonas de operaciones.
-- **`Cube.svelte`**: Componente del cubo.
-- **`Basket.svelte`**: Visualización de las cestas.
-
----
-
-## Plan Actual
-
-- **¡Funcionalidad principal completada!**
-- Posibles siguientes pasos:
-  - Mejorar la estética y las animaciones.
-  - Añadir un temporizador para la ronda.
-  - Implementar un sistema de puntuación.
-  - Añadir sonidos para las operaciones y la victoria.
+1.  **[HECHO]** Analizar el componente `App.svelte` para entender el flujo de estados del juego.
+2.  **[HECHO]** Analizar el componente `NumberSelection.svelte` para identificar cómo se gestiona la selección del usuario y el inicio del juego.
+3.  **[HECHO]** **Modificar `NumberSelection.svelte`:**
+    -   Añadir un nuevo botón "Random Total".
+    -   Crear una función `startRandom` que genere un número aleatorio de 0 a 4.
+    -   Esta función despachará el evento `start` con el número aleatorio, iniciando el juego inmediatamente.
+    -   Ajustar los estilos CSS para acomodar el nuevo botón y mantener la coherencia visual.
+4.  **[HECHO]** **Actualizar `blueprint.md`:** Documentar la nueva característica de "Random Total" en la lista de funcionalidades implementadas.

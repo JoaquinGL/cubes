@@ -10,6 +10,11 @@
     function startGame() {
         dispatch('start', { largeNumbers: selectedCount });
     }
+
+    function startRandom() {
+        const randomCount = Math.floor(Math.random() * 5); // 0 to 4
+        dispatch('start', { largeNumbers: randomCount });
+    }
 </script>
 
 <div class="container">
@@ -33,7 +38,10 @@
         </div>
     </div>
 
-    <button class="start-btn" on:click={startGame}>¡Empezar a Jugar!</button>
+    <div class="start-actions">
+        <button class="start-btn" on:click={startGame}>¡Empezar a Jugar!</button>
+        <button class="start-btn random-btn" on:click={startRandom}>Random Total</button>
+    </div>
 
 </div>
 
@@ -45,7 +53,7 @@
         justify-content: center;
         height: 100vh;
         font-family: 'Patrick Hand', cursive;
-        background-color: #fdf6e3; /* Fondo principal del juego */
+        background-color: #fdf6e3; 
         color: #5d4037;
         text-align: center;
     }
@@ -114,13 +122,16 @@
         box-shadow: 0 4px 10px rgba(210, 105, 30, 0.4);
     }
 
-    .start-btn {
+    .start-actions {
+        display: flex;
+        gap: 1.5rem;
         margin-top: 2rem;
+        align-items: center;
+    }
+
+    .start-btn {
         font-family: 'Patrick Hand', cursive;
-        font-size: 1.8rem;
         padding: 0.6em 2em;
-        background-color: #a0522d;
-        color: white;
         border: none;
         border-radius: 15px;
         box-shadow: 0 6px 15px rgba(0,0,0,0.2);
@@ -131,8 +142,27 @@
     }
 
     .start-btn:hover {
-        background-color: #5d4037;
         transform: translateY(-4px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.25);
     }
+
+    .start-btn {
+        font-size: 1.8rem;
+        background-color: #a0522d;
+        color: white;
+    }
+    
+    .start-btn:hover {
+         background-color: #5d4037;
+    }
+
+    .random-btn {
+        font-size: 1.5rem;
+        background-color: #8b4513;
+        color: #fdf6e3;
+    }
+    .random-btn:hover {
+        background-color: #a0522d;
+    }
+
 </style>
