@@ -129,17 +129,75 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.25);
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 768px) {
     .modal-content {
         padding: 1.5rem 2rem;
+        max-height: 90vh;
     }
 
     .title {
         font-size: 2.2rem;
+        margin-bottom: 1rem;
     }
 
     .instructions {
         font-size: 1.1rem;
+    }
+
+    .instructions ol, .instructions ul {
+        padding-left: 1.5rem;
+    }
+
+    .rules-title {
+        font-size: 1.5rem;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+    }
+
+    .close-btn {
+        font-size: 1.3rem;
+        margin-top: 2rem;
+        padding: 0.5em 1.8em;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .modal-content {
+        padding: 1rem 1.2rem;
+        border-width: 3px;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .instructions {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .instructions ol, .instructions ul {
+        padding-left: 1.2rem;
+    }
+
+    .instructions li {
+        margin-bottom: 0.6rem;
+    }
+
+    .rules-title {
+        font-size: 1.3rem;
+    }
+
+    .tip {
+        font-size: 0.95rem;
+        padding: 0.8rem;
+        margin-top: 1.5rem;
+    }
+
+    .close-btn {
+        font-size: 1.2rem;
+        padding: 0.5em 1.5em;
+        margin-top: 1.5rem;
     }
   }
 </style>

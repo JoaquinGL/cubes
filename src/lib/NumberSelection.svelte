@@ -193,4 +193,102 @@
         color: #d2691e;
     }
 
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .title {
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+        }
+
+        .selector-box {
+            padding: 1.5rem 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .selector-title {
+            font-size: 1.8rem;
+        }
+
+        .selector-description {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .options {
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .option-btn {
+            font-size: 1.2rem;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .main-actions {
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .start-btn {
+            font-size: 1.5rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .random-btn {
+            font-size: 1.3rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .how-to-play-btn {
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .title {
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+        }
+
+        .selector-box {
+            padding: 1rem 1rem;
+            border-width: 3px;
+        }
+
+        .selector-title {
+            font-size: 1.5rem;
+        }
+
+        .selector-description {
+            font-size: 0.9rem;
+        }
+
+        .option-btn {
+            font-size: 1.1rem;
+            padding: 0.7em 1.2em;
+        }
+
+        .start-btn {
+            font-size: 1.3rem;
+            padding: 0.5em 1.5em;
+        }
+
+        .random-btn {
+            font-size: 1.1rem;
+        }
+    }
+
 </style>

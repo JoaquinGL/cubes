@@ -12,13 +12,27 @@
   let element: HTMLElement;
   let body: Matter.Body;
 
-  const initialX = x !== undefined ? x : Math.random() * 400 + 50;
+  // Responsive cube size
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const isSmallMobile = typeof window !== 'undefined' && window.innerWidth < 480;
+  const cubeSize = isSmallMobile ? 50 : isMobile ? 60 : 70;
+  const cubeHalf = cubeSize / 2;
+
+  // Calculate responsive board width for fallback position
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1000;
+  const containerPadding = isSmallMobile ? 8 : isMobile ? 16 : 32;
+  const boardWidth = isMobile 
+    ? Math.min(viewportWidth - containerPadding * 2, 1000)
+    : 1000;
+  
+  const margin = cubeSize / 2 + 30;
+  const initialX = x !== undefined ? x : Math.random() * (boardWidth - margin * 2) + margin;
   const initialY = y !== undefined ? y : 50;
 
   onMount(() => {
     const { Bodies } = Matter;
     
-    body = Bodies.rectangle(initialX, initialY, 70, 70, {
+    body = Bodies.rectangle(initialX, initialY, cubeSize, cubeSize, {
       restitution: 0.5,
       friction: 0.1,
       label: `cube-${id}`
@@ -32,7 +46,7 @@
     function update() {
       if (body && element) {
         // Esta línea es la única fuente de verdad para la posición del cubo.
-        element.style.transform = `translate(${body.position.x - 35}px, ${body.position.y - 35}px) rotate(${body.angle}rad)`;
+        element.style.transform = `translate(${body.position.x - cubeHalf}px, ${body.position.y - cubeHalf}px) rotate(${body.angle}rad)`;
       }
       renderLoop = requestAnimationFrame(update);
     }
@@ -83,5 +97,31 @@
     font-family: 'Patrick Hand', cursive;
     font-size: 2.5rem;
     color: #5d4037;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .cube {
+      width: 60px;
+      height: 60px;
+      border-width: 3px;
+    }
+
+    span {
+      font-size: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cube {
+      width: 50px;
+      height: 50px;
+      border-width: 2px;
+      border-radius: 8px;
+    }
+
+    span {
+      font-size: 1.6rem;
+    }
   }
 </style>

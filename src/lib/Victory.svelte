@@ -71,4 +71,47 @@
         transform: translateY(-3px);
         box-shadow: 0 8px 18px rgba(0,0,0,0.25);
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .modal-backdrop {
+            padding: 1rem;
+        }
+
+        .modal-content {
+            padding: 2rem 2.5rem;
+        }
+
+        .title {
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin: 0.5rem 0 2rem 0;
+        }
+
+        .play-again-btn {
+            font-size: 1.3rem;
+            padding: 0.6em 1.5em;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .modal-content {
+            padding: 1.5rem 1.5rem;
+        }
+
+        .title {
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+        }
+
+        .play-again-btn {
+            font-size: 1.2rem;
+        }
+    }
 </style>

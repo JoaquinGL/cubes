@@ -39,13 +39,19 @@
 
     // Define layout based on screen size
     if (isMobile) {
-        basketWidth = 100; basketHeight = 100; sideMargin = 60;
-        const topMargin = 80, gap = 120;
+        basketWidth = 130; basketHeight = 100;
+        // Layout 2x2: Suma/Resta arriba, Multiplicación/División abajo
+        // Con basketWidth=130, el componente Basket calcula left = x - 65
+        const leftMargin = 75; // x=75 -> left~10px
+        const rightMargin = 305; // x=305 -> left=240px
+        const topRow = 100; // Y centro de fila superior (top final ~50px)
+        const bottomRow = 270; // Y centro de fila inferior (top final ~220px)
+        
         basketPositions = {
-            suma: { x: boardWidth - sideMargin, y: topMargin },
-            resta: { x: boardWidth - sideMargin, y: topMargin + gap },
-            multiplicacion: { x: boardWidth - sideMargin, y: topMargin + gap * 2 },
-            division: { x: boardWidth - sideMargin, y: topMargin + gap * 3 }
+            suma: { x: leftMargin, y: topRow },
+            resta: { x: rightMargin, y: topRow },
+            multiplicacion: { x: leftMargin, y: bottomRow },
+            division: { x: rightMargin, y: bottomRow }
         };
     } else {
         basketWidth = 200; basketHeight = 120; sideMargin = 150;
@@ -95,13 +101,19 @@
     let basketWidth, basketHeight, sideMargin, basketPositions;
 
     if (isMobile) {
-        basketWidth = 100; basketHeight = 100; sideMargin = 60;
-        const topMargin = 80, gap = 120;
+        basketWidth = 130; basketHeight = 100;
+        // Layout 2x2: Suma/Resta arriba, Multiplicación/División abajo
+        // Con basketWidth=130, el componente Basket calcula left = x - 65
+        const leftMargin = 75; // x=75 -> left~10px
+        const rightMargin = 305; // x=305 -> left=240px
+        const topRow = 100; // Y centro de fila superior (top final ~50px)
+        const bottomRow = 270; // Y centro de fila inferior (top final ~220px)
+        
         basketPositions = {
-            suma: { x: boardWidth - sideMargin, y: topMargin },
-            resta: { x: boardWidth - sideMargin, y: topMargin + gap },
-            multiplicacion: { x: boardWidth - sideMargin, y: topMargin + gap * 2 },
-            division: { x: boardWidth - sideMargin, y: topMargin + gap * 3 }
+            suma: { x: leftMargin, y: topRow },
+            resta: { x: rightMargin, y: topRow },
+            multiplicacion: { x: leftMargin, y: bottomRow },
+            division: { x: rightMargin, y: bottomRow }
         };
     } else {
         basketWidth = 200; basketHeight = 120; sideMargin = 150;
@@ -207,7 +219,20 @@
         width: 100%;
         border-width: 4px;
         border-radius: 15px;
-        height: 550px;
+        height: 480px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .board-container {
+        height: 460px;
+        border-radius: 10px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .board-container {
+        height: 440px;
     }
   }
 </style>

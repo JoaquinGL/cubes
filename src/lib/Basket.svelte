@@ -38,4 +38,26 @@
     font-weight: bold;
     user-select: none;
   }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .basket {
+      border-width: 3px;
+      border-radius: 10px;
+    }
+
+    .symbol {
+      font-size: 2.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .basket {
+      border-width: 2px;
+    }
+
+    .symbol {
+      font-size: 2rem;
+    }
+  }
 </style>
