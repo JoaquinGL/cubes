@@ -1,7 +1,25 @@
 {
-  "name": "cubes",
-  "private": true,
-  "version": "0.0.0",
+  "name": "arithmetic-challenge",
+  "version": "1.0.0",
+  "description": "An interactive numbers puzzle game with physics-based gameplay inspired by the classic Countdown numbers game",
+  "author": "Joaquin Giraldez Lopez",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JoaquinGL/cubes.git"
+  },
+  "keywords": [
+    "game",
+    "puzzle",
+    "numbers",
+    "arithmetic",
+    "physics",
+    "svelte",
+    "matter-js",
+    "countdown",
+    "education",
+    "math"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
