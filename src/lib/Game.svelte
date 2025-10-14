@@ -9,6 +9,7 @@
   import Basket from './Basket.svelte';
   import Victory from './Victory.svelte';
   import Summary from './Summary.svelte';
+  import { t } from './i18n';
   import type Matter from 'matter-js';
 
   export let largeNumbers: number;
@@ -133,8 +134,8 @@
   {/if}
 
   <header>
-    <h1>El Desafío Aritmético</h1>
-    <div class="target-display">Objetivo: <span>{$target}</span></div>
+    <h1>{$t.title}</h1>
+    <div class="target-display">{$t.objective}: <span>{$target}</span></div>
   </header>
 
   {#if gameReady}
@@ -151,9 +152,9 @@
   {/if}
 
   <div class="controls">
-     <button on:click={handleReset}>Reiniciar</button>
-     <button on:click={handleFinish}>Finalizar</button>
-    <button on:click={goBackToSelection}>Nueva Selección</button>
+     <button on:click={handleReset}>{$t.reset}</button>
+     <button on:click={handleFinish}>{$t.finish}</button>
+    <button on:click={goBackToSelection}>{$t.newSelection}</button>
   </div>
 </main>
 

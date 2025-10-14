@@ -2,6 +2,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { fly } from 'svelte/transition';
+  import { t } from './i18n';
 
   export let target: number;
   export let closestNumber: number;
@@ -13,30 +14,30 @@
 
 <div class="modal-backdrop">
   <div class="modal-content" in:fly={{ y: -50, duration: 500 }}>
-    <h2 class="title">¡Fin de la Partida!</h2>
+    <h2 class="title">{$t.summaryTitle}</h2>
     {#if difference === 0}
-      <p class="subtitle">¡Has clavado el objetivo!</p>
+      <p class="subtitle">{$t.summaryPerfect}</p>
     {:else}
       <p class="summary-text">
-        Objetivo: <span class="number">{target}</span>
+        {$t.summaryObjective}: <span class="number">{target}</span>
       </p>
       <p class="summary-text">
-        Tu mejor número: <span class="number">{closestNumber}</span>
+        {$t.summaryYourBest}: <span class="number">{closestNumber}</span>
       </p>
       <p class="subtitle">
-        Te has quedado a <span class="difference">{difference}</span> del objetivo.
+        {@html $t.summaryDifference.replace('{difference}', difference.toString())}
       </p>
     {/if}
 
     {#if idealSolution}
       <div class="ideal-solution">
-        <h3 class="solution-title">Solución Ideal</h3>
+        <h3 class="solution-title">{$t.idealSolution}</h3>
         <p class="solution-text">{idealSolution}</p>
       </div>
     {/if}
 
     <button class="play-again-btn" on:click={() => dispatch('playAgain')}>
-      Jugar de Nuevo
+      {$t.playAgain}
     </button>
   </div>
 </div>
@@ -53,6 +54,7 @@
         justify-content: center;
         align-items: center;
         z-index: 1000;
+        padding: 0;
     }
 
     .modal-content {
@@ -63,6 +65,11 @@
         text-align: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         border: 5px solid #a0522d;
+        max-width: 650px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        margin: auto;
     }
 
     .title {
@@ -139,12 +146,10 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
-        .modal-backdrop {
-            padding: 1rem;
-        }
-
         .modal-content {
-            padding: 2rem 2rem;
+            width: 95%;
+            padding: 2rem 1.8rem;
+            border-radius: 20px;
         }
 
         .title {
@@ -187,7 +192,10 @@
 
     @media (max-width: 480px) {
         .modal-content {
-            padding: 1.5rem 1.5rem;
+            width: 96%;
+            padding: 1.5rem 1.2rem;
+            border-width: 3px;
+            border-radius: 15px;
         }
 
         .title {
@@ -195,12 +203,12 @@
         }
 
         .subtitle {
-            font-size: 1rem;
+            font-size: 1.5rem;
             margin: 0.5rem 0 1.5rem 0;
         }
 
         .summary-text {
-            font-size: 1rem;
+            font-size: 1.5rem;
         }
 
         .difference {
@@ -212,7 +220,7 @@
         }
 
         .solution-text {
-            font-size: 0.9rem;
+            font-size: 1.5rem;
             padding: 0.6rem;
         }
 

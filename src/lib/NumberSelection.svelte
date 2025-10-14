@@ -2,12 +2,13 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import HowToPlayModal from './HowToPlayModal.svelte';
+    import { t, currentLanguage, setLanguage, type Language } from './i18n';
 
     const dispatch = createEventDispatcher();
 
-    let selectedCount = 1; 
+    let selectedCount = 2; 
     let showHowToPlay = false;
-    const options = [0, 1, 2, 3, 4];
+    const options = [2, 3, 4];
 
     function startGame() {
         dispatch('start', { largeNumbers: selectedCount });
@@ -17,6 +18,10 @@
         const randomCount = Math.floor(Math.random() * 5);
         dispatch('start', { largeNumbers: randomCount });
     }
+
+    function handleLanguageChange(lang: Language) {
+        setLanguage(lang);
+    }
 </script>
 
 {#if showHowToPlay}
@@ -24,12 +29,12 @@
 {/if}
 
 <div class="container">
-    <h1 class="title">El Desafío Aritmético</h1>
-    <p class="subtitle">Prepara tu mente para el cálculo</p>
+    <h1 class="title">{$t.title}</h1>
+    <p class="subtitle">{$t.subtitle}</p>
 
     <div class="selector-box">
-        <h2 class="selector-title">Elige tus números</h2>
-        <p class="selector-description">¿Cuántos números "grandes" quieres? (25, 50, 75, 100)</p>
+        <h2 class="selector-title">{$t.selectNumbers}</h2>
+        <p class="selector-description">{$t.howManyLarge}</p>
 
         <div class="options">
             {#each options as count}
@@ -38,20 +43,41 @@
                     class:selected={selectedCount === count}
                     on:click={() => selectedCount = count}
                 >
-                    {count} grande{count === 1 ? '' : 's'}
+                    {count} {count === 1 ? $t.large : $t.larges}
                 </button>
             {/each}
+            <button class="option-btn random-option" on:click={startRandom}>
+                {$t.randomTotal}
+            </button>
         </div>
     </div>
 
     <div class="main-actions">
-        <button class="start-btn" on:click={startGame}>¡Empezar a Jugar!</button>
-        <button class="start-btn random-btn" on:click={startRandom}>Random Total</button>
+        <button class="start-btn" on:click={startGame}>{$t.startPlaying}</button>
     </div>
 
-    <button class="how-to-play-btn" on:click={() => showHowToPlay = true}>
-        ¿Cómo se Juega?
-    </button>
+    <div class="bottom-actions">
+        <div class="language-selector">
+            <button 
+                class="lang-btn" 
+                class:active={$currentLanguage === 'es'}
+                on:click={() => handleLanguageChange('es')}
+            >
+                🇪🇸 ES
+            </button>
+            <button 
+                class="lang-btn" 
+                class:active={$currentLanguage === 'en'}
+                on:click={() => handleLanguageChange('en')}
+            >
+                🇬🇧 EN
+            </button>
+        </div>
+
+        <button class="how-to-play-btn" on:click={() => showHowToPlay = true}>
+            {$t.howToPlay}
+        </button>
+    </div>
 
 </div>
 
@@ -68,6 +94,56 @@
         text-align: center;
         padding: 1rem;
         box-sizing: border-box;
+        position: relative;
+    }
+
+    .bottom-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 600px;
+        margin-top: 2rem;
+    }
+
+    .language-selector {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .lang-btn {
+        font-family: 'Patrick Hand', cursive;
+        font-size: 1rem;
+        padding: 0.5em 1em;
+        background-color: transparent;
+        color: #8b4513;
+        border: 2px solid #d2691e;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-weight: bold;
+    }
+
+    .lang-btn:hover {
+        background-color: rgba(210, 105, 30, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .lang-btn.active {
+        background-color: #d2691e;
+        color: white;
+        box-shadow: 0 3px 8px rgba(210, 105, 30, 0.4);
+    }
+
+    .random-option {
+        background-color: #8b4513 !important;
+        color: #fdf6e3 !important;
+        border-color: #8b4513 !important;
+    }
+
+    .random-option:hover {
+        background-color: #a0522d !important;
+        color: white !important;
     }
 
     .title {
@@ -139,6 +215,7 @@
         gap: 1.5rem;
         margin-top: 2rem;
         align-items: center;
+        justify-content: center;
     }
 
     .start-btn {
@@ -183,7 +260,6 @@
         background: none;
         border: none;
         color: #a0522d;
-        margin-top: 2rem;
         cursor: pointer;
         text-decoration: underline;
         transition: color 0.2s ease;
@@ -195,6 +271,17 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
+        .bottom-actions {
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .lang-btn {
+            font-size: 0.9rem;
+            padding: 0.4em 0.8em;
+        }
+
         .title {
             font-size: 2.5rem;
         }
@@ -250,7 +337,6 @@
 
         .how-to-play-btn {
             font-size: 1.2rem;
-            margin-top: 1.5rem;
         }
     }
 

@@ -227,6 +227,7 @@
     .board-container {
         height: 460px;
         border-radius: 10px;
+        width: calc(100% - 8px);
     }
   }
 
