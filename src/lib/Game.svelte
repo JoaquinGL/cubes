@@ -41,8 +41,21 @@
     generateNewRound(largeNumbers);
     gameReady = true;
 
+    // Clear any existing timer before setting a new one
+    clearTimeout(basketTimer);
     basketTimer = window.setTimeout(() => {
       basketsVisible = true;
+    }, 2500);
+  }
+
+  function handleReset() {
+    clearTimeout(basketTimer); // Ensure no lingering timers
+    basketsVisible = false;
+    resetRound();
+
+    // Re-show baskets after a delay, simulating the start of the game
+    basketTimer = window.setTimeout(() => {
+        basketsVisible = true;
     }, 2500);
   }
 
@@ -59,16 +72,14 @@
     const currentTarget = get(target);
     if (currentTarget === null) return;
 
-    // 1. Encuentra el número más cercano conseguido por el jugador
     closestNumber = currentNumbersValues.reduce((prev, curr) => 
       Math.abs(curr - currentTarget) < Math.abs(prev - currentTarget) ? curr : prev, 
       currentNumbersValues[0] || 0
     );
 
-    // 2. Ejecuta el solver para encontrar la solución ideal
     const initialNumsForSolver = get(initialNumbers).map(n => n.value);
     const solution = findBestSolution(initialNumsForSolver, currentTarget);
-    idealSolution = `${formatExpression(solution.expression)} = ${solution.value}`;
+    idealSolution = solution ? `${formatExpression(solution.expression)} = ${solution.value}` : 'No se encontró una solución.';
 
     showSummary = true;
   }
@@ -116,9 +127,9 @@
 
 <main class="game-container">
   {#if showVictory}
-    <Victory on:playAgain={goBackToSelection} />
+    <Victory on:playAgain={initializeRound} on:newSelection={goBackToSelection} />
   {:else if showSummary}
-    <Summary target={$target} {closestNumber} {idealSolution} on:playAgain={goBackToSelection} />
+    <Summary target={$target} {closestNumber} {idealSolution} on:playAgain={initializeRound} on:newSelection={goBackToSelection} />
   {/if}
 
   <header>
@@ -140,7 +151,7 @@
   {/if}
 
   <div class="controls">
-     <button on:click={resetRound}>Reiniciar</button>
+     <button on:click={handleReset}>Reiniciar</button>
      <button on:click={handleFinish}>Finalizar</button>
     <button on:click={goBackToSelection}>Nueva Selección</button>
   </div>
@@ -155,23 +166,29 @@
     padding-top: 1rem;
     background-color: #fdf6e3;
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     box-sizing: border-box;
     position: relative;
   }
   header {
       text-align: center;
       margin-bottom: 1rem;
+      padding: 0 1rem;
   }
   header h1 { font-size: 2.5rem; color: #5d4037; margin: 0; }
   .target-display { font-size: 1.8rem; color: #8b4513; margin-top: 0.5rem; }
   .target-display span { font-weight: bold; color: #d2691e; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
   .controls {
     margin-top: 1.5rem;
+    margin-bottom: 1rem;
     display: flex;
     gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    padding: 0 1rem;
+    box-sizing: border-box;
   }
-  button {
+  .controls button {
     font-family: 'Patrick Hand', cursive;
     font-size: 1.2rem;
     padding: 0.5em 1.2em;
@@ -183,9 +200,30 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  button:hover {
+  .controls button:hover {
     background-color: #a0522d;
     transform: translateY(-2px);
     box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+  }
+
+  @media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    .target-display {
+        font-size: 1.5rem;
+    }
+    .controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+        margin-top: 1rem;
+    }
+    .controls button {
+        width: 100%;
+        max-width: 400px;
+        font-size: 1.1rem;
+        padding: 0.8em 1.2em;
+    }
   }
 </style>

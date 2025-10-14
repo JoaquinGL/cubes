@@ -1,6 +1,6 @@
 
 <script lang="ts">
-  import { onMount, createEventDispatcher, onDestroy, afterUpdate } from 'svelte';
+  import { onMount, createEventDispatcher, onDestroy } from 'svelte';
   import Matter from 'matter-js';
   import { setupEngine, addBoundaries } from './engine';
 
@@ -21,37 +21,64 @@
   };
 
   let zones: { label: string; x: number; y: number; width: number; height: number; bounds: Matter.Bounds }[] = [];
-  let basketsActivated = false;
 
-  afterUpdate(() => {
-    if (basketsVisible && !basketsActivated) {
-      activateBaskets();
-      basketsActivated = true;
+  // --- Reactive logic for creating/destroying basket walls ---
+  $: if (world) {
+    if (basketsVisible) {
+      createBasketWalls();
+    } else {
+      removeBasketWalls();
     }
-  });
+  }
 
-  function activateBaskets() {
+  function createBasketWalls() {
     if (!world || !container) return;
     const boardWidth = container.clientWidth;
-    const basketWidth = 200;
-    const basketHeight = 120;
-    const wallThickness = 20;
-    const sideMargin = 150;
+    const isMobile = boardWidth < 768;
+    let basketWidth, basketHeight, sideMargin, basketPositions;
 
-    const basketPositions = {
-      suma: { x: sideMargin, y: 200 },
-      resta: { x: sideMargin, y: 400 },
-      multiplicacion: { x: boardWidth - sideMargin, y: 200 },
-      division: { x: boardWidth - sideMargin, y: 400 }
-    };
+    // Define layout based on screen size
+    if (isMobile) {
+        basketWidth = 100; basketHeight = 100; sideMargin = 60;
+        const topMargin = 80, gap = 120;
+        basketPositions = {
+            suma: { x: boardWidth - sideMargin, y: topMargin },
+            resta: { x: boardWidth - sideMargin, y: topMargin + gap },
+            multiplicacion: { x: boardWidth - sideMargin, y: topMargin + gap * 2 },
+            division: { x: boardWidth - sideMargin, y: topMargin + gap * 3 }
+        };
+    } else {
+        basketWidth = 200; basketHeight = 120; sideMargin = 150;
+        basketPositions = {
+            suma: { x: sideMargin, y: 200 },
+            resta: { x: sideMargin, y: 400 },
+            multiplicacion: { x: boardWidth - sideMargin, y: 200 },
+            division: { x: boardWidth - sideMargin, y: 400 }
+        };
+    }
     
+    // Create and add physical walls to the world
     zones.forEach(zone => {
       const pos = basketPositions[zone.label];
-      const floor = Matter.Bodies.rectangle(pos.x, pos.y + basketHeight / 2, basketWidth + wallThickness, wallThickness, { isStatic: true, label: `${zone.label}-floor`, render: { visible: false } });
-      const leftWall = Matter.Bodies.rectangle(pos.x - basketWidth / 2 - wallThickness / 2, pos.y, wallThickness, basketHeight + wallThickness, { isStatic: true, label: `${zone.label}-leftWall`, render: { visible: false } });
-      const rightWall = Matter.Bodies.rectangle(pos.x + basketWidth / 2 + wallThickness / 2, pos.y, wallThickness, basketHeight + wallThickness, { isStatic: true, label: `${zone.label}-rightWall`, render: { visible: false } });
+      if (!pos) return;
+      const wallThickness = 20;
+
+      const floor = Matter.Bodies.rectangle(pos.x, pos.y + basketHeight / 2, basketWidth + wallThickness, wallThickness, { isStatic: true, label: `basket-wall-${zone.label}-floor`, render: { visible: false } });
+      const leftWall = Matter.Bodies.rectangle(pos.x - basketWidth / 2 - wallThickness / 2, pos.y, wallThickness, basketHeight + wallThickness, { isStatic: true, label: `basket-wall-${zone.label}-left`, render: { visible: false } });
+      const rightWall = Matter.Bodies.rectangle(pos.x + basketWidth / 2 + wallThickness / 2, pos.y, wallThickness, basketHeight + wallThickness, { isStatic: true, label: `basket-wall-${zone.label}-right`, render: { visible: false } });
+      
       Matter.World.add(world, [floor, leftWall, rightWall]);
     });
+  }
+
+  function removeBasketWalls() {
+    if (!world) return;
+    const wallsToRemove = Matter.Composite.allBodies(world).filter(
+        body => body.label.startsWith('basket-wall')
+    );
+    if (wallsToRemove.length > 0) {
+        Matter.World.remove(world, wallsToRemove);
+    }
   }
 
   onMount(() => {
@@ -61,19 +88,30 @@
     const { mouseConstraint } = engineSetup;
 
     const boardWidth = container.clientWidth;
-    const boardHeight = 600;
+    const boardHeight = container.clientHeight;
     addBoundaries(world, boardWidth, boardHeight);
 
-    const basketWidth = 200;
-    const basketHeight = 120;
-    const sideMargin = 150;
+    const isMobile = boardWidth < 768;
+    let basketWidth, basketHeight, sideMargin, basketPositions;
 
-    const basketPositions = {
-      suma: { x: sideMargin, y: 200 },
-      resta: { x: sideMargin, y: 400 },
-      multiplicacion: { x: boardWidth - sideMargin, y: 200 },
-      division: { x: boardWidth - sideMargin, y: 400 }
-    };
+    if (isMobile) {
+        basketWidth = 100; basketHeight = 100; sideMargin = 60;
+        const topMargin = 80, gap = 120;
+        basketPositions = {
+            suma: { x: boardWidth - sideMargin, y: topMargin },
+            resta: { x: boardWidth - sideMargin, y: topMargin + gap },
+            multiplicacion: { x: boardWidth - sideMargin, y: topMargin + gap * 2 },
+            division: { x: boardWidth - sideMargin, y: topMargin + gap * 3 }
+        };
+    } else {
+        basketWidth = 200; basketHeight = 120; sideMargin = 150;
+        basketPositions = {
+            suma: { x: sideMargin, y: 200 },
+            resta: { x: sideMargin, y: 400 },
+            multiplicacion: { x: boardWidth - sideMargin, y: 200 },
+            division: { x: boardWidth - sideMargin, y: 400 }
+        };
+    }
     
     zones = Object.keys(basketPositions).map(label => {
       const pos = basketPositions[label];
@@ -89,6 +127,7 @@
         const zoneState = basketStates[zone.label];
         if (zoneState && basketsVisible) {
           allCubes.forEach(cube => {
+            if (!cube.id) return;
             const isInside = Matter.Bounds.contains(zone.bounds, cube.position);
             const state = zoneState[cube.id];
 
@@ -111,9 +150,9 @@
             const bodyA = markedCubes[0].body;
             const bodyB = markedCubes[1].body;
             
-            dispatch('operation', { bodyA, bodyB, operation: zone.label, boardWidth: container.clientWidth });
-            delete zoneState[bodyA.id];
-            delete zoneState[bodyB.id];
+            dispatch('operation', { bodyA, bodyB, operation: zone.label });
+            if(bodyA.id) delete zoneState[bodyA.id];
+            if(bodyB.id) delete zoneState[bodyB.id];
           }
         }
       });
@@ -140,6 +179,7 @@
         if(zoneState[id].timer) clearTimeout(zoneState[id].timer);
       }
     });
+    removeBasketWalls(); // Clean up on component destruction
   });
 </script>
 
@@ -157,6 +197,17 @@
     border-radius: 20px;
     position: relative;
     overflow: hidden;
-    touch-action: none;
+    touch-action: none; 
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (max-width: 768px) {
+    .board-container {
+        width: 100%;
+        border-width: 4px;
+        border-radius: 15px;
+        height: 550px;
+    }
   }
 </style>
