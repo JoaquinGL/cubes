@@ -2,32 +2,33 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { fly, fade } from 'svelte/transition';
+  import { t } from './i18n';
 
   const dispatch = createEventDispatcher();
 </script>
 
 <div class="modal-backdrop" on:click={() => dispatch('close')} transition:fade={{ duration: 300 }}>
   <div class="modal-content" in:fly={{ y: -50, duration: 400 }} out:fly={{ y: -50, duration: 300 }} on:click|stopPropagation>
-    <h2 class="title">¿Cómo se Juega?</h2>
+    <h2 class="title">{$t.howToPlayTitle}</h2>
     <div class="instructions">
-        <p>El objetivo es simple: <strong>alcanzar el número objetivo</strong> que aparece en la parte superior de la pantalla.</p>
+        <p>{@html $t.howToPlayIntro}</p>
         
         <ol>
-            <li>Tienes <strong>seis números iniciales</strong> en cubos de madera.</li>
-            <li>Arrastra dos cubos y suéltalos dentro de una de las <strong>cuatro cestas de operaciones</strong> (suma, resta, multiplicación o división) que aparecerán.</li>
-            <li>Al hacerlo, los dos números originales desaparecerán y aparecerá un <strong>nuevo cubo con el resultado</strong>.</li>
-            <li>Puedes usar los nuevos resultados en cálculos posteriores.</li>
+            <li>{@html $t.howToPlayStep1}</li>
+            <li>{@html $t.howToPlayStep2}</li>
+            <li>{@html $t.howToPlayStep3}</li>
+            <li>{@html $t.howToPlayStep4}</li>
         </ol>
 
-        <h3 class="rules-title">Reglas de las Operaciones</h3>
+        <h3 class="rules-title">{$t.rulesTitle}</h3>
         <ul>
-            <li><strong>Resta:</strong> Siempre se resta el número menor al mayor, el resultado nunca es negativo.</li>
-            <li><strong>División:</strong> Solo es válida si el resultado es un número entero (por ejemplo, 10 / 2 es válido, pero 10 / 3 no).</li>
+            <li>{@html $t.rulesSubtract}</li>
+            <li>{@html $t.rulesDivide}</li>
         </ul>
 
-        <p class="tip">No tienes que usar los seis números. ¡Intenta llegar al objetivo de la forma que puedas!</p>
+        <p class="tip">{$t.tip}</p>
     </div>
-    <button class="close-btn" on:click={() => dispatch('close')}>¡Entendido!</button>
+    <button class="close-btn" on:click={() => dispatch('close')}>{$t.understood}</button>
   </div>
 </div>
 
@@ -43,8 +44,7 @@
     justify-content: center;
     align-items: center;
     z-index: 2000;
-    padding: 1rem;
-    box-sizing: border-box;
+    padding: 0;
   }
 
   .modal-content {
@@ -53,13 +53,14 @@
     padding: 2rem 3.5rem;
     border-radius: 25px;
     max-width: 600px;
-    width: 100%;
+    width: 90%;
     text-align: left;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     border: 5px solid #a0522d;
     color: #5d4037;
-    max-height: 85vh;
+    max-height: 90vh;
     overflow-y: auto;
+    margin: auto;
   }
 
   .title {
@@ -131,17 +132,19 @@
 
   @media (max-width: 768px) {
     .modal-content {
-        padding: 1.5rem 2rem;
-        max-height: 90vh;
+        width: 95%;
+        padding: 1.5rem 1.5rem;
+        max-height: 92vh;
+        border-radius: 20px;
     }
 
     .title {
-        font-size: 2.2rem;
+        font-size: 2rem;
         margin-bottom: 1rem;
     }
 
     .instructions {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
 
     .instructions ol, .instructions ul {
@@ -163,25 +166,27 @@
 
   @media (max-width: 480px) {
     .modal-content {
-        padding: 1rem 1.2rem;
+        width: 96%;
+        padding: 1.2rem 1rem;
         border-width: 3px;
+        border-radius: 15px;
     }
 
     .title {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
     }
 
     .instructions {
-        font-size: 1rem;
+        font-size: 0.95rem;
         line-height: 1.5;
     }
 
     .instructions ol, .instructions ul {
-        padding-left: 1.2rem;
+        padding-left: 1rem;
     }
 
     .instructions li {
-        margin-bottom: 0.6rem;
+        margin-bottom: 0.5rem;
     }
 
     .rules-title {
@@ -189,13 +194,13 @@
     }
 
     .tip {
-        font-size: 0.95rem;
-        padding: 0.8rem;
-        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        padding: 0.7rem;
+        margin-top: 1.3rem;
     }
 
     .close-btn {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         padding: 0.5em 1.5em;
         margin-top: 1.5rem;
     }

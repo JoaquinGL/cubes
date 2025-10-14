@@ -2,16 +2,17 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import { fly } from 'svelte/transition';
+    import { t } from './i18n';
 
     const dispatch = createEventDispatcher();
 </script>
 
 <div class="modal-backdrop">
     <div class="modal-content" in:fly={{ y: -50, duration: 500 }}>
-        <h2 class="title">¡Objetivo Conseguido!</h2>
-        <p class="subtitle">¡Tu mente es una calculadora!</p>
+        <h2 class="title">{$t.victoryTitle}</h2>
+        <p class="subtitle">{$t.victorySubtitle}</p>
         <button class="play-again-btn" on:click={() => dispatch('playAgain')}>
-            Jugar de Nuevo
+            {$t.playAgain}
         </button>
     </div>
 </div>
@@ -28,6 +29,7 @@
         justify-content: center;
         align-items: center;
         z-index: 1000;
+        padding: 0;
     }
 
     .modal-content {
@@ -38,6 +40,9 @@
         text-align: center;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         border: 5px solid #a0522d;
+        max-width: 600px;
+        width: 90%;
+        margin: auto;
     }
 
     .title {
@@ -74,12 +79,10 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
-        .modal-backdrop {
-            padding: 1rem;
-        }
-
         .modal-content {
-            padding: 2rem 2.5rem;
+            width: 95%;
+            padding: 2rem 2rem;
+            border-radius: 20px;
         }
 
         .title {
@@ -99,7 +102,10 @@
 
     @media (max-width: 480px) {
         .modal-content {
-            padding: 1.5rem 1.5rem;
+            width: 96%;
+            padding: 1.5rem 1.2rem;
+            border-width: 3px;
+            border-radius: 15px;
         }
 
         .title {
