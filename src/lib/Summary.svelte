@@ -5,6 +5,7 @@
 
   export let target: number;
   export let closestNumber: number;
+  export let idealSolution: string | null;
 
   const dispatch = createEventDispatcher();
   const difference = Math.abs(target - closestNumber);
@@ -26,6 +27,14 @@
         Te has quedado a <span class="difference">{difference}</span> del objetivo.
       </p>
     {/if}
+
+    {#if idealSolution}
+      <div class="ideal-solution">
+        <h3 class="solution-title">Solución Ideal</h3>
+        <p class="solution-text">{idealSolution}</p>
+      </div>
+    {/if}
+
     <button class="play-again-btn" on:click={() => dispatch('playAgain')}>
       Jugar de Nuevo
     </button>
@@ -86,6 +95,27 @@
         color: #a0522d;
     }
 
+    .ideal-solution {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px dashed #a0522d;
+    }
+
+    .solution-title {
+        font-size: 1.8rem;
+        color: #5d4037;
+        margin: 0 0 1rem 0;
+    }
+
+    .solution-text {
+        font-family: 'monospace';
+        font-size: 1.2rem;
+        background-color: #fdf6e3;
+        padding: 1rem;
+        border-radius: 10px;
+        color: #333;
+        white-space: pre-wrap; 
+    }
 
     .play-again-btn {
         font-family: 'Patrick Hand', cursive;
@@ -98,6 +128,7 @@
         box-shadow: 0 5px 12px rgba(0,0,0,0.2);
         cursor: pointer;
         transition: all 0.2s ease;
+        margin-top: 2rem;
     }
 
     .play-again-btn:hover {

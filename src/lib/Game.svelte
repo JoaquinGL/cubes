@@ -2,12 +2,13 @@
 <script lang="ts">
   import { onMount, onDestroy, createEventDispatcher } from 'svelte';
   import { get } from 'svelte/store';
-  import { numbers, target, generateNewRound, removeNumbers, addNumber, resetRound } from './stores';
+  import { numbers, initialNumbers, target, generateNewRound, removeNumbers, addNumber, resetRound } from './stores';
+  import { findBestSolution, formatExpression } from './solver';
   import Board from './Board.svelte';
   import Cube from './Cube.svelte';
   import Basket from './Basket.svelte';
   import Victory from './Victory.svelte';
-  import Summary from './Summary.svelte'; // Import the new component
+  import Summary from './Summary.svelte';
   import type Matter from 'matter-js';
 
   export let largeNumbers: number;
@@ -22,8 +23,9 @@
   let basketsVisible = false;
   let basketTimer: number;
   let showVictory = false;
-  let showSummary = false; // Control the summary screen
-  let closestNumber = 0;   // Store the closest number found
+  let showSummary = false;
+  let closestNumber = 0;
+  let idealSolution: string | null = null;
 
   const unsubscribe = numbers.subscribe(currentNumbers => {
     if (get(target) && currentNumbers.some(n => n.value === get(target))) {
@@ -34,6 +36,7 @@
   function initializeRound() {
     showVictory = false;
     showSummary = false;
+    idealSolution = null;
     basketsVisible = false;
     generateNewRound(largeNumbers);
     gameReady = true;
@@ -52,16 +55,20 @@
   function goBackToSelection() { dispatch('end'); }
 
   function handleFinish() {
-    const currentNumbers = get(numbers).map(n => n.value);
+    const currentNumbersValues = get(numbers).map(n => n.value);
     const currentTarget = get(target);
-
     if (currentTarget === null) return;
 
-    closestNumber = currentNumbers.reduce((prev, curr) => {
-      const diffPrev = Math.abs(prev - currentTarget);
-      const diffCurr = Math.abs(curr - currentTarget);
-      return diffCurr < diffPrev ? curr : prev;
-    }, currentNumbers[0] || 0);
+    // 1. Encuentra el número más cercano conseguido por el jugador
+    closestNumber = currentNumbersValues.reduce((prev, curr) => 
+      Math.abs(curr - currentTarget) < Math.abs(prev - currentTarget) ? curr : prev, 
+      currentNumbersValues[0] || 0
+    );
+
+    // 2. Ejecuta el solver para encontrar la solución ideal
+    const initialNumsForSolver = get(initialNumbers).map(n => n.value);
+    const solution = findBestSolution(initialNumsForSolver, currentTarget);
+    idealSolution = `${formatExpression(solution.expression)} = ${solution.value}`;
 
     showSummary = true;
   }
@@ -87,34 +94,22 @@
     const valB = numB.value;
 
     switch (operation) {
-      case 'suma':
-        result = valA + valB;
-        break;
-      case 'resta':
-        result = Math.max(valA, valB) - Math.min(valA, valB);
-        break;
-      case 'multiplicacion':
-        result = valA * valB;
-        break;
+      case 'suma': result = valA + valB; break;
+      case 'resta': result = Math.max(valA, valB) - Math.min(valA, valB); break;
+      case 'multiplicacion': result = valA * valB; break;
       case 'division':
-        const maxVal = Math.max(valA, valB);
-        const minVal = Math.min(valA, valB);
-        if (minVal !== 0 && maxVal % minVal === 0) {
-          result = maxVal / minVal;
-        }
+        const maxVal = Math.max(valA, valB), minVal = Math.min(valA, valB);
+        if (minVal !== 0 && maxVal % minVal === 0) result = maxVal / minVal;
         break;
     }
 
-    if (result === null) return; // Si la operación no fue válida (división no entera)
+    if (result === null) return;
     
     const targetZone = zones.find(z => z.label === operation);
     if (!targetZone) return; 
 
-    const dropX = targetZone.x;
-    const dropY = targetZone.y;
-
     removeNumbers([numA.id, numB.id]);
-    addNumber(result, dropX, dropY);
+    addNumber(result, targetZone.x, targetZone.y);
   }
 
 </script>
@@ -123,7 +118,7 @@
   {#if showVictory}
     <Victory on:playAgain={goBackToSelection} />
   {:else if showSummary}
-    <Summary target={$target} {closestNumber} on:playAgain={goBackToSelection} />
+    <Summary target={$target} {closestNumber} {idealSolution} on:playAgain={goBackToSelection} />
   {/if}
 
   <header>
@@ -135,9 +130,7 @@
     <Board on:boardready={handleBoardReady} on:operation={handleOperation} basketsVisible={basketsVisible}>
       {#if world && zones.length > 0}
         {#if basketsVisible}
-          {#each zones as zone (zone.label)}
-            <Basket {...zone} />
-          {/each}
+          {#each zones as zone (zone.label)} <Basket {...zone} /> {/each}
         {/if}
         {#each $numbers as num (num.id)}
           <Cube id={num.id} number={num.value} world={world} x={num.x} y={num.y} />
