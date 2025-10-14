@@ -9,7 +9,9 @@ El juego está construido con Svelte y TypeScript, utilizando Matter.js para cre
 
 ## Características Implementadas
 
+- **Guía de Juego:** Una ventana modal de "Cómo se Juega" explica las reglas y la mecánica a los nuevos jugadores. Está accesible desde la pantalla de inicio.
 - **Selección de Números:** El jugador puede elegir cuántos "números grandes" (25, 50, 75, 100) desea incluir en su selección de seis números, desde 0 hasta 4.
+- **Inicio Rápido (Random Total):** En la pantalla de selección, un botón "Random Total" permite iniciar el juego inmediatamente con una cantidad aleatoria de números grandes.
 - **Generación de la Partida:**
   - Se generan 6 números iniciales según la elección del jugador.
   - Se genera un número objetivo aleatorio entre 101 y 999.
@@ -31,22 +33,12 @@ El juego está construido con Svelte y TypeScript, utilizando Matter.js para cre
 - **Pantalla de Resumen (Fin de Partida):**
   - Muestra el número objetivo, el número más cercano que ha conseguido el jugador y a qué distancia se ha quedado.
   - **Solucionador Ideal:** Muestra la secuencia de operaciones exacta para alcanzar el objetivo (o el resultado más cercano posible si el objetivo no era alcanzable), sirviendo como un "desafío a la máquina".
-- **Inicio Rápido (Random Total):** En la pantalla de selección, un botón "Random Total" permite iniciar el juego inmediatamente con una cantidad aleatoria de números grandes.
 
 ## Estilo y Diseño
 
 - **Estética:** El juego tiene un diseño amigable y táctil, con una paleta de colores cálidos (marrones, naranjas, beiges) que recuerda a la madera y el papel.
 - **Tipografía:** Se utiliza la fuente "Patrick Hand" para dar un toque informal y manuscrito.
-- **Animaciones:** Se emplean transiciones suaves (`fly` de Svelte) para la aparición de las pantallas modales (Victoria y Resumen), mejorando la experiencia de usuario.
+- **Diseño Adaptable (Responsive):** La aplicación está optimizada para dispositivos móviles. Las ventanas modales, como la de "Cómo se Juega", incluyen barras de desplazamiento vertical (`scroll`) si el contenido excede la altura de la pantalla, garantizando una buena experiencia en cualquier tamaño de dispositivo.
+- **Animaciones:** Se emplean transiciones suaves (`fly`, `fade` de Svelte) para la aparición de las pantallas modales, mejorando la experiencia de usuario.
 - **Interactividad:** Los botones y elementos interactivos tienen efectos `hover` y `shadows` que les dan profundidad y responden a la acción del usuario.
 
-## Plan para el Cambio Actual: Añadir "Random Total"
-
-1.  **[HECHO]** Analizar el componente `App.svelte` para entender el flujo de estados del juego.
-2.  **[HECHO]** Analizar el componente `NumberSelection.svelte` para identificar cómo se gestiona la selección del usuario y el inicio del juego.
-3.  **[HECHO]** **Modificar `NumberSelection.svelte`:**
-    -   Añadir un nuevo botón "Random Total".
-    -   Crear una función `startRandom` que genere un número aleatorio de 0 a 4.
-    -   Esta función despachará el evento `start` con el número aleatorio, iniciando el juego inmediatamente.
-    -   Ajustar los estilos CSS para acomodar el nuevo botón y mantener la coherencia visual.
-4.  **[HECHO]** **Actualizar `blueprint.md`:** Documentar la nueva característica de "Random Total" en la lista de funcionalidades implementadas.

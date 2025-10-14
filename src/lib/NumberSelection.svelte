@@ -1,10 +1,12 @@
 
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
+    import HowToPlayModal from './HowToPlayModal.svelte';
 
     const dispatch = createEventDispatcher();
 
-    let selectedCount = 1; // Un valor por defecto
+    let selectedCount = 1; 
+    let showHowToPlay = false;
     const options = [0, 1, 2, 3, 4];
 
     function startGame() {
@@ -12,10 +14,14 @@
     }
 
     function startRandom() {
-        const randomCount = Math.floor(Math.random() * 5); // 0 to 4
+        const randomCount = Math.floor(Math.random() * 5);
         dispatch('start', { largeNumbers: randomCount });
     }
 </script>
+
+{#if showHowToPlay}
+    <HowToPlayModal on:close={() => showHowToPlay = false} />
+{/if}
 
 <div class="container">
     <h1 class="title">El Desafío Aritmético</h1>
@@ -38,10 +44,14 @@
         </div>
     </div>
 
-    <div class="start-actions">
+    <div class="main-actions">
         <button class="start-btn" on:click={startGame}>¡Empezar a Jugar!</button>
         <button class="start-btn random-btn" on:click={startRandom}>Random Total</button>
     </div>
+
+    <button class="how-to-play-btn" on:click={() => showHowToPlay = true}>
+        ¿Cómo se Juega?
+    </button>
 
 </div>
 
@@ -56,6 +66,8 @@
         background-color: #fdf6e3; 
         color: #5d4037;
         text-align: center;
+        padding: 1rem;
+        box-sizing: border-box;
     }
 
     .title {
@@ -74,7 +86,7 @@
         background-color: rgba(239, 227, 201, 0.7);
         padding: 2rem 3rem;
         border-radius: 20px;
-        margin-top: 3rem;
+        margin-top: 2rem;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         border: 4px solid #cdbda1;
     }
@@ -94,7 +106,7 @@
         display: flex;
         justify-content: center;
         gap: 1.5rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
 
     .option-btn {
@@ -122,7 +134,7 @@
         box-shadow: 0 4px 10px rgba(210, 105, 30, 0.4);
     }
 
-    .start-actions {
+    .main-actions {
         display: flex;
         gap: 1.5rem;
         margin-top: 2rem;
@@ -163,6 +175,22 @@
     }
     .random-btn:hover {
         background-color: #a0522d;
+    }
+
+    .how-to-play-btn {
+        font-family: 'Patrick Hand', cursive;
+        font-size: 1.3rem;
+        background: none;
+        border: none;
+        color: #a0522d;
+        margin-top: 2rem;
+        cursor: pointer;
+        text-decoration: underline;
+        transition: color 0.2s ease;
+    }
+
+    .how-to-play-btn:hover {
+        color: #d2691e;
     }
 
 </style>
