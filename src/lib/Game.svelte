@@ -268,7 +268,7 @@
         margin-top: 0.25rem;
     }
     .controls {
-        margin-top: 0;
+        margin-top: 0.8rem;
         padding-bottom: 32px;
         gap: 0.6rem;
     }
