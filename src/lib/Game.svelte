@@ -174,13 +174,19 @@
 
   @media (max-width: 768px) {
     .game-container {
-        padding-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-top: 0.5rem;
     }
   }
 
   @media (max-width: 480px) {
     .game-container {
-        padding-top: 0.3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding-top: 0.3rem;
     }
   }
   header {
@@ -249,7 +255,9 @@
 
   @media (max-width: 480px) {
     header {
-        margin-bottom: 0.6rem;
+        margin-bottom: 0;
+        padding: 0;
+        padding-top: 40px;
     }
     header h1 {
         font-size: 1.8rem;
@@ -260,8 +268,8 @@
         margin-top: 0.25rem;
     }
     .controls {
-        margin-top: 0.8rem;
-        margin-bottom: 0.4rem;
+        margin-top: 0;
+        padding-bottom: 32px;
         gap: 0.6rem;
     }
     .controls button {
