@@ -2,6 +2,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import HowToPlayModal from './HowToPlayModal.svelte';
+    import BackgroundCubes from './BackgroundCubes.svelte';
     import { t, currentLanguage, setLanguage, type Language } from './i18n';
 
     const dispatch = createEventDispatcher();
@@ -29,8 +30,11 @@
 {/if}
 
 <div class="container">
-    <h1 class="title">{$t.title}</h1>
-    <p class="subtitle">{$t.subtitle}</p>
+    <BackgroundCubes />
+    
+    <div class="content">
+        <h1 class="title">{$t.title}</h1>
+        <p class="subtitle">{$t.subtitle}</p>
 
     <div class="selector-box">
         <h2 class="selector-title">{$t.selectNumbers}</h2>
@@ -78,11 +82,13 @@
             {$t.howToPlay}
         </button>
     </div>
+    </div>
 
 </div>
 
 <style>
     .container {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -94,7 +100,18 @@
         text-align: center;
         padding: 1rem;
         box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .content {
         position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 800px;
     }
 
     .bottom-actions {

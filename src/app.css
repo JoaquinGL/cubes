@@ -28,13 +28,11 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-image: subtle-noise-texture.png;
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 0;
+  padding: 0;
   text-align: center;
   width: 100%;
 }
